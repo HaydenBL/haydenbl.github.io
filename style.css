@@ -16,6 +16,10 @@ header {
 	box-shadow: 0px 5px 10px #888888;
 	height: 5em;
 	margin-bottom:1em;
+	z-index: 999;
+	position:fixed;
+	width:100%;
+	top:0px;
 }
 
 a {
@@ -33,19 +37,26 @@ a {
 	font-size: 3em;
 	font-family: Roboto;
 	font-weight: 500;
-	margin-left: 1em;
+	margin-left: 10%;
 	color: #212121;
 	white-space: nowrap;
 }
 
+#center-container {
+	//border:5px solid black;
+	margin:auto;
+	margin-top:8em;
+	max-width:50em;
+	min-width: 10em;
+}
+
 #center-display {
 	padding: 10px;
-	margin:auto;
 	background-color: white;
 	box-shadow: 0px 5px 10px #888888;
 	border-radius: 4px;
-	width:80%;
-	margin-top:2em;
+	margin-left: 1em;
+	margin-right: 1em;
 }
 
 .tile {

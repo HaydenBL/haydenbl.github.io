@@ -132,15 +132,17 @@ a {
 }
 
 .line-separator{
-	margin: 0 0 15px 0;
+	margin: 0 0 16px 0;
 	border-bottom:1px solid #bdbdbd;
-	padding: 20px 0 20px 0;
+	padding: 8px 0 8px 0;
 }
 
 .tile {
 	display:inline-block;
 	margin: 8px;
 	padding: 8px;
+	min-height: 14em;
+	vertical-align: top;
 	/*border:1px solid black;*/
 	-webkit-transition: all .5s ease-out 0.1s;
     -moz-transition: all .5s ease-out 0.1s;

@@ -90,7 +90,6 @@ a {
 #header-title {
 	font-size: 3em;
 	font-family: 'Roboto Slab';
-	font-weight: 500;
 	margin:auto;
 	color: #FFFFFF;
 	white-space: nowrap;
@@ -118,7 +117,8 @@ a {
 
 .section-header {
 	font-size: 2.5em;
-	font-family: 'Roboto Thin';
+	font-family: Roboto;
+	font-weight: 100;
 	font-style: italic;
 	margin: auto;
 	margin-bottom: 8px;

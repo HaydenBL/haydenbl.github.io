@@ -10,7 +10,7 @@ body {
 }
 
 header {
-	background-color:#2196F3;
+	background-color: #2196F3;
 	border-top: 30px solid #2196F3;
 	box-shadow: 0px 5px 10px #888888;
 	height: 4.5em;
@@ -19,6 +19,7 @@ header {
 	width:100%;
 	top:0px;
 	text-align: center;
+	white-space: nowrap;
 }
 
 a {
@@ -26,15 +27,51 @@ a {
 	color:black;
 }
 
-#logo {
-	padding:0px, 5px, 0px, 5px;
-	display:block;
+#footer-container {
 	margin:auto;
-	margin-top:-20px;
+	margin-top:1em;
+	max-width: 80em;
+	min-width: 550px;
+	bottom: 0px;
+	/*border:5px solid black;*/
+}
+
+#footer-display {
+	padding: 10px;
+	background-color: #323232;
+	box-shadow: 0px 5px 10px #888888;
+	border-radius: 2px;
+	margin-left: 1em;
+	margin-right: 1em;
+	text-align: right;
+	padding: 4px;
+	padding-right: 24px; 
+}
+
+#footer-text {
+	color:#FFFFFF;
+	display: inline-block;
+}
+
+#my-head {
+	
+	display:inline-block;
+	border-radius:50%;
+
+	/*Text offset by head*/
+	position: relative;
+	transform: translate(-10px, -27px);
+
+	/*Centered text with head to left*/
+	/*position: absolute;
+	transform: translate(-120px, -26px);*/
+
 }
 
 #header-wrap {
 	display:inline-block;
+	size:2em;
+	vertical-align: top;
 	/*border:1px solid black;*/
 }
 
@@ -45,8 +82,7 @@ a {
 	text-align: left;
 	margin-top: -12px;
 	margin-bottom: -15px;
-	margin-left: 5px;
-	color: #212121;
+	color: #FFFFFF;
 	white-space: nowrap;
 	/*border:1px solid black;*/
 }
@@ -56,7 +92,7 @@ a {
 	font-family: 'Roboto Slab';
 	font-weight: 500;
 	margin:auto;
-	color: #212121;
+	color: #FFFFFF;
 	white-space: nowrap;
 	/*border:1px solid black;*/
 }
@@ -64,8 +100,8 @@ a {
 #center-container {
 	margin:auto;
 	margin-top:8em;
-	max-width:80em;
-	min-width: 500px;
+	max-width: 80em;
+	min-width: 550px;
 	/*border:5px solid black;*/
 }
 
@@ -76,7 +112,8 @@ a {
 	border-radius: 4px;
 	margin-left: 1em;
 	margin-right: 1em;
-	height:80em; //for testing
+	margin-bottom:1em;
+	/*height:80em; //for testing*/
 }
 
 .section-header {
@@ -129,7 +166,7 @@ a {
 }
 
 .tile-desc {
-	margin-top: -10px;
+	margin-top: -8px;
 	margin-bottom: 8px;
 	text-align: center;
 	font-size: 1.2em;

@@ -12,7 +12,7 @@ body {
 header {
 	background-color: #2196F3;
 	border-top: 30px solid #2196F3;
-	box-shadow: 0px 5px 10px #888888;
+	box-shadow: 0px 2px 4px rgba(0,0,0,0.24);
 	height: 4.5em;
 	z-index: 999;
 	position:fixed;
@@ -39,8 +39,7 @@ a {
 #footer-display {
 	padding: 10px;
 	background-color: #323232;
-	box-shadow: 0px 5px 10px #888888;
-	border-radius: 2px;
+	box-shadow: 0px 2px 4px rgba(0,0,0,0.24);
 	margin-left: 1em;
 	margin-right: 1em;
 	text-align: right;
@@ -107,8 +106,7 @@ a {
 #center-display {
 	padding: 10px;
 	background-color: white;
-	box-shadow: 0px 5px 10px #888888;
-	border-radius: 4px;
+	box-shadow: 0px 2px 2px rgba(0,0,0,0.4);
 	margin-left: 1em;
 	margin-right: 1em;
 	margin-bottom:1em;
@@ -156,7 +154,6 @@ a {
 }
 
 .tile:hover {
-	border-radius: 4px;
 	background-color: rgb(0, 0, 0, 0.2);
     background-color: rgba(0, 0, 0, 0.2);
 }

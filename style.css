@@ -168,8 +168,8 @@ a {
 }
 
 .tile-desc {
-	margin-top: -8px;
-	margin-bottom: 8px;
+	margin-top: -6px;
+	margin-bottom: 10px;
 	text-align: center;
 	font-size: 1.2em;
 	font-weight: 500;
@@ -180,5 +180,6 @@ a {
 	margin-bottom: 5px;
 	text-align: center;
 	font-size: 1.3em;
+	line-height: 20px;
 	/*font-weight: 400;*/
 }

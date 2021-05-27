@@ -1,15 +1,18 @@
 <template>
-  <img class="bg-purple-400" alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+  <div class="p-20 bg-gray-100 flex space-x-16">
+    <Item/>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
+import Item from "./components/Item.vue";
 
 export default defineComponent({
   name: 'App',
   components: {
+    Item,
     HelloWorld
   }
 })
@@ -17,11 +20,8 @@ export default defineComponent({
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

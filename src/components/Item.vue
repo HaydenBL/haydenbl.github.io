@@ -1,11 +1,14 @@
 <template>
 
-  <a href="https://play.google.com/store/apps/details?id=se.haydenblai.quiquote" class="relative flex-shrink-0 flex bg-white px-4 py-2 rounded-2xl w-120 h-40 shadow-md origin-center transform transition-transform ease-in-out duration-200 hover:scale-110" target="_blank">
-    <img class="absolute w-44 -top-6 -left-9" src="/public/quiquote.png" />
-    <div class="ml-32 h-full flex flex-col">
-      <div class="font-calistoga text-2xl mb-1">QuiQuote</div>
+  <a :href="item.link"
+     class="relative flex-shrink-0 flex bg-white px-4 py-2 rounded-2xl w-120 h-40 shadow-md origin-center transform transition-transform ease-in-out duration-200 hover:scale-110 z-0 hover:z-10"
+     target="_blank"
+  >
+    <img class="absolute w-44 -top-6 -left-9" :src="item.image" />
+    <div class="ml-32 h-full flex-grow flex flex-col">
+      <div class="font-calistoga text-2xl mb-1">{{ item.name }}</div>
       <div class="text-base pl-2 h-full border-l-4 border-gray-300">
-        <div>An Android app for saving and sharing quotes.</div>
+        <div>{{ item.description }}</div>
       </div>
     </div>
     <div class="flex items-end">
@@ -17,8 +20,17 @@
 
 </template>
 
-<script>
-export default {
-  name: "Item"
-}
+<script lang="ts">
+import ItemInterface from "../types/ItemInterface";
+import {defineComponent, PropType} from "vue";
+
+export default defineComponent({
+  name: "Item",
+  props: {
+    item: {
+      type: Object as PropType<ItemInterface>,
+      required: false,
+    }
+  }
+})
 </script>

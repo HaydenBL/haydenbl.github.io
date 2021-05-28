@@ -24,13 +24,13 @@ export default defineComponent({
         {
           name: `QuiQuote`,
           description: `An Android app for saving and sharing quotes.`,
-          image: `/img/QuiQuote.png`,
+          image: `/assets/quiquote.png`,
           link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
         {
           name: `Other`,
-          description: `Blah blah bunch of stuff`,
-          image: `/img/QuiQuote.png`,
+          description: `Blah blah bunch of stuff and things`,
+          image: `/assets/twitter.png`,
           link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
       ]

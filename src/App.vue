@@ -1,6 +1,8 @@
 <template>
-  <div class="p-20 flex space-x-12">
-    <Item v-for="project in projects" :key="project.name" :item="project" />
+  <div class="px-8 py-6">
+    <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-12 max-w-screen-2xl m-auto">
+      <Item v-for="project in projects" :key="project.name" :item="project" />
+    </div>
   </div>
 </template>
 
@@ -22,15 +24,21 @@ export default defineComponent({
     return {
       projects: [
         {
+          name: `haydenblai.se`,
+          description: `Blah blah bunch of stuff and things`,
+          image: `site_logo.png`,
+          link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
+        },
+        {
           name: `QuiQuote`,
           description: `An Android app for saving and sharing quotes.`,
-          image: `/assets/quiquote.png`,
+          image: `quiquote.png`,
           link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
         {
           name: `Other`,
           description: `Blah blah bunch of stuff and things`,
-          image: `/assets/twitter.png`,
+          image: `twitter.png`,
           link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
       ]

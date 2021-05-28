@@ -1,5 +1,5 @@
 <template>
-  <div class="p-20 bg-gray-100 flex space-x-12">
+  <div class="p-20 flex space-x-12">
     <Item v-for="project in projects" :key="project.name" :item="project" />
   </div>
 </template>

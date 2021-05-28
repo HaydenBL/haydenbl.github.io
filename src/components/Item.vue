@@ -1,14 +1,14 @@
 <template>
 
-  <a :href="item.link"
+  <a :href="item?.link"
      class="relative flex-shrink-0 flex bg-white px-4 py-2 rounded-2xl w-120 h-40 shadow-md origin-center transform transition-transform ease-in-out duration-200 hover:scale-110 z-0 hover:z-10"
      target="_blank"
   >
-    <img class="absolute w-44 -top-6 -left-9" :src="item.image" />
+    <img class="absolute w-44 -top-6 -left-9" :src="item?.image" />
     <div class="ml-32 h-full flex-grow flex flex-col">
-      <div class="font-calistoga text-2xl mb-1">{{ item.name }}</div>
+      <div class="font-calistoga text-2xl mb-1">{{ item?.name }}</div>
       <div class="text-base pl-2 h-full border-l-4 border-gray-300">
-        <div>{{ item.description }}</div>
+        <div>{{ item?.description }}</div>
       </div>
     </div>
     <div class="flex items-end">

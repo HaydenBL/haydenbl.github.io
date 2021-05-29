@@ -25,7 +25,7 @@ export default defineComponent({
       projects: [
         {
           name: `haydenblai.se`,
-          description: `Source code for this website! Currently written in Vue and styled with Tailwind CSS.`,
+          description: `Source code for this website. Written in Vue and styled with Tailwind CSS.`,
           image: `site_logo.png`,
           link: `https://github.com/HaydenBL/haydenbl.github.io`,
         },
@@ -50,7 +50,7 @@ export default defineComponent({
         {
           name: `midi2smw`,
           description: `Converts MIDI files to MML so it can be inserted into Super Mario World romhacks.`,
-          image: `logo.png`,
+          image: `midi2smw.png`,
           link: `https://github.com/HaydenBL/midi2smw`,
         },
         {

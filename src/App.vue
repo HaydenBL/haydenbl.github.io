@@ -1,6 +1,6 @@
 <template>
-  <div class="px-8 py-6">
-    <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-12 max-w-screen-2xl m-auto">
+  <div class="px-2 sm:px-8 py-6">
+    <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-12 max-w-screen-2xl m-auto">
       <Item v-for="project in projects" :key="project.name" :item="project" />
     </div>
   </div>
@@ -25,9 +25,9 @@ export default defineComponent({
       projects: [
         {
           name: `haydenblai.se`,
-          description: `Blah blah bunch of stuff and things`,
+          description: `Source code for this website! Currently written in Vue and styled with Tailwind CSS.`,
           image: `site_logo.png`,
-          link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
+          link: `https://github.com/HaydenBL/haydenbl.github.io`,
         },
         {
           name: `QuiQuote`,
@@ -36,10 +36,28 @@ export default defineComponent({
           link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
         {
-          name: `Other`,
-          description: `Blah blah bunch of stuff and things`,
-          image: `twitter.png`,
-          link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
+          name: `Euclidean Calculator`,
+          description: `Simple webapp for calculating a Greatest Common Divisor using Euclid's method. Written while procrastinating in a math class.`,
+          image: `eucal.png`,
+          link: `https://haydenblai.se/euclidean-calc`,
+        },
+        {
+          name: `VSCO Photo Downloader`,
+          description: `Online tool for scraping photos from VSCO.`,
+          image: `vsco-dler.png`,
+          link: `https://vscophotodownloader.com/`,
+        },
+        {
+          name: `midi2smw`,
+          description: `Converts MIDI files to MML so it can be inserted into Super Mario World romhacks.`,
+          image: `logo.png`,
+          link: `https://github.com/HaydenBL/midi2smw`,
+        },
+        {
+          name: `Quora Clone`,
+          description: `An old PHP project for a web and database class project in university. It's very bad!`,
+          image: `quora.png`,
+          link: `https://github.com/HaydenBL/Quora-Clone`,
         },
       ]
     }

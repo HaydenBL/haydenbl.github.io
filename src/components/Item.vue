@@ -1,14 +1,14 @@
 <template>
 
   <a :href="item?.link"
-     class="relative flex bg-white px-4 rounded-2xl py-2 h-40 shadow-md origin-center transform transition-transform ease-in-out duration-200 hover:scale-110 z-0 hover:z-10"
+     class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform transition-transform ease-in-out duration-200 hover:scale-110 z-0 hover:z-10"
      target="_blank"
   >
-    <img class="absolute w-32 sm:w-44 sm:-top-6 -left-9" :src="`/assets/${item?.image || 'my_face_2.png'}`" />
-    <div class="ml-20 sm:ml-32 h-full flex-grow flex flex-col">
-      <div class="font-calistoga text-2xl mb-1">{{ item?.name }}</div>
-      <div class="text-base pl-2 h-full border-l-4 border-gray-300">
-        <div>{{ item?.description }}</div>
+    <img class="absolute w-24 sm:w-44 sm:-top-6 -left-4 sm:-left-9 filter drop-shadow-xl" :src="`/assets/${item?.image || 'my_face_2.png'}`" />
+    <div class="ml-16 sm:ml-32 h-full flex-grow flex flex-col">
+      <h2 class="font-calistoga text-lg sm:text-2xl mb-1">{{ item?.name }}</h2>
+      <div class="text-sm sm:text-base pl-2 h-full min-h-0 border-l-4 border-gray-300">
+        <div class="h-full overflow-hidden">{{ item?.description }}</div>
       </div>
     </div>
     <div class="flex items-end">

@@ -3,4 +3,5 @@ export default interface ItemInterface {
     description: string,
     image: string,
     link: string,
+    show: boolean,
 }

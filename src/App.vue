@@ -18,6 +18,12 @@ export default defineComponent({
     Item,
     HelloWorld
   },
+  created: function() {
+    const ANIMATION_DELAY = 100;
+    for (let i in this.projects) {
+      setTimeout(() => this.projects[i].show = true, i * ANIMATION_DELAY);
+    }
+  },
   data(): {
     projects: Array<ItemInterface>
   } {

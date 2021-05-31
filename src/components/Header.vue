@@ -4,7 +4,7 @@
     <div class="font-lobster text-white w-[100rem] transform origin-top-left
                 text-5xl md:text-6xl
                 -rotate-45
-                w-[90rem]
+                w-[100rem]
                 translate-y-[26rem] md:translate-y-[28rem]
                 translate-x-[-83rem] md:translate-x-[-55rem] lg:translate-x-[-45rem]"
     >

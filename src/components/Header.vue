@@ -1,10 +1,16 @@
 <template>
 
-  <div class="absolute w-full overflow-hidden pb-64">
-    <div class="top-0 font-lobster text-6xl text-white transform origin-top-left -rotate-45 w-[90rem] translate-y-[30rem] translate-x-[-30rem]">
-      <div class="bg-red-500 h-96"></div>
+  <div class="absolute top-0 w-full overflow-hidden pb-64">
+    <div class="font-lobster text-white w-[100rem] transform origin-top-left
+                text-5xl md:text-6xl
+                -rotate-45
+                w-[90rem]
+                translate-y-[26rem] md:translate-y-[28rem]
+                translate-x-[-83rem] md:translate-x-[-55rem] lg:translate-x-[-45rem]"
+    >
+      <div class="bg-red-500 h-[50rem]"></div>
       <div class="bg-red-500 py-2 -mt-px">
-        <div class="flex space-x-3 ml-[55rem]">
+        <div class="flex space-x-3 ml-[80rem]">
           <!-- Instagram -->
           <a href="https://www.instagram.com/hayden_blaise/" target="_blank" class="transform transition-transform ease-in-out duration-200 hover:scale-110 hover:rotate-6">
             <svg class="h-10 w-10" xmlns="http://www.w3.org/2000/svg" fill="white" stroke="none" viewBox="0 0 24 24" role="img">
@@ -20,7 +26,7 @@
         </div>
       </div>
       <div class="-mt-px">
-        <span class="inline-block w-[55rem] pb-3 pr-2 text-right bg-red-500">Hayden</span>
+        <span class="inline-block w-[80rem] pb-3 pr-2 text-right bg-red-500">Hayden</span>
         <span class="text-gray-600 pl-2 pb-3">Lueck</span>
       </div>
     </div>

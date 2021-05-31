@@ -1,20 +1,30 @@
 <template>
-  <div class="px-2 sm:px-8 py-6">
-    <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-12 max-w-screen-2xl m-auto">
-      <Item v-for="project in projects" :key="project.name" :item="project" />
+
+  <Header></Header>
+
+  <div class="p-2 sm:p-8">
+
+    <div class="mt-96 px-2 sm:px-8 py-6">
+      <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-12 max-w-screen-2xl m-auto">
+        <Item v-for="project in projects" :key="project.name" :item="project" />
+      </div>
     </div>
+
   </div>
+
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
+import Header from "./components/Header.vue"
 import Item from "./components/Item.vue";
 import ItemInterface from "./types/ItemInterface";
 
 export default defineComponent({
   name: 'App',
   components: {
+    Header,
     Item,
     HelloWorld
   },

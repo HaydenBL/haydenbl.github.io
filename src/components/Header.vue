@@ -7,7 +7,7 @@
                 text-5xl md:text-6xl
                 -rotate-45
                 w-[100rem]
-                translate-y-[28rem] md:translate-y-[28rem]
+                translate-y-[26rem] md:translate-y-[28rem]
                 translate-x-[-83rem] md:translate-x-[-75rem] lg:translate-x-[-65rem] xl:translate-x-[-45rem]"
     >
       <div class="bg-red-500 h-[50rem]"></div>

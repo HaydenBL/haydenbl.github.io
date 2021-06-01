@@ -2,7 +2,7 @@
 
   <Header></Header>
 
-  <div class="mt-60 md:mt-72 lg:mt-96 p-2 sm:p-8">
+  <div class="mt-64 md:mt-72 lg:mt-96 p-2 sm:p-8">
 
     <div class="px-2 sm:px-8 py-6">
       <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-12 max-w-screen-2xl m-auto">
@@ -26,17 +26,14 @@ export default defineComponent({
   components: {
     Header,
     Item,
-    HelloWorld
   },
-  created: function() {
+  created() {
     const ANIMATION_DELAY = 100;
     for (let i in this.projects) {
       setTimeout(() => this.projects[i].show = true, i * ANIMATION_DELAY);
     }
   },
-  data(): {
-    projects: Array<ItemInterface>
-  } {
+  data(): { projects: Array<ItemInterface> } {
     return {
       projects: [
         {

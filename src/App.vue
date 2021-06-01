@@ -16,7 +16,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
 import Header from "./components/Header.vue"
 import Item from "./components/Item.vue";
 import ItemInterface from "./types/ItemInterface";
@@ -33,7 +32,7 @@ export default defineComponent({
       setTimeout(() => this.projects[i].show = true, i * ANIMATION_DELAY);
     }
   },
-  data(): { projects: Array<ItemInterface> } {
+  data() {
     return {
       projects: [
         {
@@ -72,7 +71,7 @@ export default defineComponent({
           image: `quora.png`,
           link: `https://github.com/HaydenBL/Quora-Clone`,
         },
-      ]
+      ] as ItemInterface[]
     }
   },
 })

@@ -8,7 +8,7 @@
                 -rotate-45
                 w-[100rem]
                 translate-y-[28rem] md:translate-y-[28rem]
-                translate-x-[-83rem] md:translate-x-[-55rem] lg:translate-x-[-45rem]"
+                translate-x-[-83rem] md:translate-x-[-75rem] lg:translate-x-[-65rem] xl:translate-x-[-45rem]"
     >
       <div class="bg-red-500 h-[50rem]"></div>
       <div class="bg-red-500 py-2 -mt-px">

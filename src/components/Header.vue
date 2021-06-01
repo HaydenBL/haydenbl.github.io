@@ -13,9 +13,9 @@
       <div class="bg-red-500 h-[50rem]"></div>
       <div class="bg-red-500 py-2 -mt-px">
         <TransitionChild as="div"
-                         enter="transition-all ease-out duration-500"
-                         enterFrom="ml-[120rem]"
                          class="flex space-x-3 ml-[80rem]"
+                         enter="transition-all ease-out duration-500"
+                         enterFrom="ml-[110rem]"
         >
           <!-- Instagram -->
           <a href="https://www.instagram.com/hayden_blaise/" target="_blank" class="transform transition-transform ease-in-out duration-200 hover:scale-110 hover:rotate-6">
@@ -58,7 +58,7 @@ export default defineComponent({
     }
   },
   created() {
-    setTimeout(() => this.show = true, 100)
+    setTimeout(() => this.show = true, 100);
   },
   components: {
     TransitionRoot,

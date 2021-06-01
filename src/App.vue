@@ -43,16 +43,10 @@ export default defineComponent({
           link: `https://github.com/HaydenBL/haydenbl.github.io`,
         },
         {
-          name: `QuiQuote`,
-          description: `An Android app for saving and sharing quotes.`,
-          image: `quiquote.png`,
-          link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
-        },
-        {
-          name: `Euclidean Calculator`,
-          description: `Simple webapp for calculating a Greatest Common Divisor using Euclid's method. Written while procrastinating in a math class.`,
-          image: `eucal.png`,
-          link: `https://haydenblai.se/euclidean-calc`,
+          name: `midi2smw`,
+          description: `Converts MIDI files to MML so it can be inserted into Super Mario World romhacks.`,
+          image: `midi2smw.png`,
+          link: `https://github.com/HaydenBL/midi2smw`,
         },
         {
           name: `VSCO Photo Downloader`,
@@ -61,10 +55,16 @@ export default defineComponent({
           link: `https://vscophotodownloader.com/`,
         },
         {
-          name: `midi2smw`,
-          description: `Converts MIDI files to MML so it can be inserted into Super Mario World romhacks.`,
-          image: `midi2smw.png`,
-          link: `https://github.com/HaydenBL/midi2smw`,
+          name: `QuiQuote`,
+          description: `An Android app for saving and sharing quotes.`,
+          image: `quiquote.png`,
+          link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
+        },
+        {
+          name: `Euclidean Calculator`,
+          description: `Simple webapp for calculating a Greatest Common Divisor using Euclid's method. Written while procrastinating math homework.`,
+          image: `eucal.png`,
+          link: `https://haydenblai.se/euclidean-calc`,
         },
         {
           name: `Quora Clone`,

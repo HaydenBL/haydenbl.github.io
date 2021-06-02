@@ -1,4 +1,4 @@
-## Hayden Lueck portfolio
+![Header](/public/assets/hero_img.jpg?raw=true)
 
 Written with Vue 3 + Typescript + Vite
 

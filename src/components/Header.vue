@@ -15,7 +15,7 @@
         <div class="w-[80rem]"></div>
         <TransitionChild as="div"
                          class="flex space-x-3"
-                         enter="transition transform ease-out duration-500"
+                         enter="transition transform transform-gpu ease-out duration-500"
                          enterFrom="translate-x-[20rem]"
         >
           <!-- Instagram -->
@@ -34,7 +34,7 @@
       </div>
       <TransitionChild as="div"
                        class="w-full -mt-px flex"
-                       enter="transition transform ease-out duration-500"
+                       enter="transition transform transform-gpu ease-out duration-500"
                        enterFrom="translate-x-[-30rem]"
       >
         <span class="w-[80rem] pb-3 pr-2 text-right bg-red-500">Hayden</span>

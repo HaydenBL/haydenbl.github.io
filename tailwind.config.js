@@ -5,7 +5,6 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        lobster: ['Lobster', 'Verdana', 'sans-serif'],
         calistoga: ['Calistoga', 'Georgia', 'serif'],
       },
     },

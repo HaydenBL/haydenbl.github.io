@@ -29,7 +29,7 @@ export default defineComponent({
   created() {
     const ANIMATION_DELAY = 100;
     for (let i in this.projects) {
-      setTimeout(() => this.projects[i].show = true, i * ANIMATION_DELAY);
+      setTimeout(() => this.projects[i].show = true, +i * ANIMATION_DELAY);
     }
   },
   data() {
@@ -38,37 +38,37 @@ export default defineComponent({
         {
           name: `haydenblai.se`,
           description: `Source code for this website. Written in Vue and styled with Tailwind CSS.`,
-          image: `site_logo.png`,
+          image: `site_logo.jpg`,
           link: `https://github.com/HaydenBL/haydenbl.github.io`,
         },
         {
           name: `midi2smw`,
           description: `Converts MIDI files to MML so it can be inserted into Super Mario World romhacks.`,
-          image: `midi2smw.png`,
+          image: `midi2smw.jpg`,
           link: `https://github.com/HaydenBL/midi2smw`,
         },
         {
           name: `VSCO Photo Downloader`,
           description: `Online tool for scraping photos from VSCO.`,
-          image: `vsco-dler.png`,
+          image: `vsco-dler.jpg`,
           link: `https://vscophotodownloader.com/`,
         },
         {
           name: `QuiQuote`,
           description: `An Android app for saving and sharing quotes.`,
-          image: `quiquote.png`,
+          image: `quiquote.jpg`,
           link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
         {
           name: `Euclidean Calculator`,
           description: `Simple webapp for calculating a Greatest Common Divisor using Euclid's method. Written while procrastinating math homework.`,
-          image: `eucal.png`,
+          image: `eucal.jpg`,
           link: `https://haydenblai.se/euclidean-calc`,
         },
         {
           name: `Quora Clone`,
           description: `An old PHP project for a web and database class project in university. It's very bad!`,
-          image: `quora.png`,
+          image: `quora.jpg`,
           link: `https://github.com/HaydenBL/Quora-Clone`,
         },
       ] as ItemInterface[]

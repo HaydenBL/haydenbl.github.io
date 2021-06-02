@@ -13,7 +13,7 @@
                        enter-from="rotate-45 scale-70 opacity-0"
                        enter-to="rotate-0 scale-100 opacity-100"
       >
-        <img class="absolute w-24 sm:w-44 sm:-top-6 -left-4 sm:-left-9 filter drop-shadow-xl" :src="`/assets/${item.image || 'my_face_2.png'}`" alt="Icon" />
+        <img class="absolute w-24 sm:w-44 sm:-top-6 -left-4 sm:-left-9 rounded-full filter drop-shadow-xl" :src="`/assets/${item.image || 'site_logo.jpg'}`" alt="Icon" />
       </TransitionChild>
       <div class="ml-16 sm:ml-32 h-full flex-grow flex flex-col">
         <TransitionChild as="template"

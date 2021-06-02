@@ -1,5 +1,6 @@
 <template>
-  <TransitionRoot :show="!!item.show"
+  <TransitionRoot v-if="item"
+                  :show="!!item.show"
                   enter="transition transform duration-300 ease-out"
                   enter-from="translate-x-4 opacity-0"
                   enter-to="translate-x-0 opacity-100"

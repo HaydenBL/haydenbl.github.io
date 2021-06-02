@@ -63,7 +63,7 @@ export default defineComponent({
           name: `Euclidean Calculator`,
           description: `Simple webapp for calculating a Greatest Common Divisor using Euclid's method. Written while procrastinating math homework.`,
           image: `eucal.jpg`,
-          link: `https://haydenblai.se/euclidean-calc`,
+          link: `/euclidean-calc`,
         },
         {
           name: `Quora Clone`,

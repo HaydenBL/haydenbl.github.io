@@ -2,7 +2,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - rewrite # TODO - change to master
+      - master
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest

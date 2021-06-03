@@ -27,9 +27,10 @@ export default defineComponent({
     Item,
   },
   created() {
-    const ANIMATION_DELAY = 100;
+    const INITIAL_DELAY = 350;
+    const ITEM_DELAY = 70;
     for (let i in this.projects) {
-      setTimeout(() => this.projects[i].show = true, +i * ANIMATION_DELAY);
+      setTimeout(() => this.projects[i].show = true, +i * ITEM_DELAY + INITIAL_DELAY);
     }
   },
   data() {
@@ -76,11 +77,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style>
-#app {
-  box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-</style>

@@ -3,7 +3,7 @@
   <TransitionRoot as="div"
                   :show="show"
                   class="absolute top-0 w-full overflow-hidden pb-64">
-    <div class="text-white w-[100rem] transform origin-top-left
+    <div class="text-white transform origin-top-left
                 text-5xl md:text-6xl
                 -rotate-45
                 w-[100rem]

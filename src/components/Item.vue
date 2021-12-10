@@ -1,24 +1,24 @@
 <template>
   <TransitionRoot v-if="item"
                   :show="!!item.show"
-                  enter="transition transform duration-300 ease-out"
+                  enter="transition duration-300 ease-out"
                   enter-from="translate-x-4 opacity-0"
                   enter-to="translate-x-0 opacity-100"
   >
     <a :href="item.link"
-       class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform transform-gpu transition-transform ease-in-out duration-200 hover:scale-105 hover:rotate-1 hover:z-10"
+       class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu transition-transform ease-in-out duration-200 hover:scale-105 hover:rotate-1 hover:z-10"
        target="_blank"
     >
       <TransitionChild as="template"
-                       enter="transition transform duration-500 ease-out"
+                       enter="transition duration-500 ease-out"
                        enter-from="rotate-45 scale-70 opacity-0"
                        enter-to="rotate-0 scale-100 opacity-100"
       >
-        <img class="absolute w-24 sm:w-44 top-4 sm:-top-6 -left-5 sm:-left-9 rounded-full filter drop-shadow-xl" :src="`/assets/${item.image || 'site_logo.jpg'}`" alt="Icon" />
+        <img class="absolute w-24 sm:w-44 top-4 sm:-top-6 -left-5 sm:-left-9 rounded-full drop-shadow-xl" :src="`/assets/${item.image || 'site_logo.jpg'}`" alt="Icon" />
       </TransitionChild>
       <div class="ml-16 sm:ml-32 h-full flex-grow flex flex-col">
         <TransitionChild as="template"
-                         enter="transition transform duration-500 ease-out"
+                         enter="transition duration-500 ease-out"
                          enter-from="translate-x-12 opacity-0"
                          enter-to="translate-x-0 opacity-100"
         >
@@ -26,7 +26,7 @@
         </TransitionChild>
         <div class="text-sm sm:text-base pl-2 h-full min-h-0 border-l-4 border-gray-300">
           <TransitionChild as="template"
-                           enter="transition transform duration-500 ease-out"
+                           enter="transition duration-500 ease-out"
                            enter-from="translate-x-12 opacity-0"
                            enter-to="translate-x-0 opacity-100"
           >

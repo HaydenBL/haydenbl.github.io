@@ -52,13 +52,12 @@ export default defineComponent({
           name: `VSCO Photo Downloader`,
           description: `Online tool for scraping photos from VSCO.`,
           image: `vsco-dler.jpg`,
-          link: `https://vscophotodownloader.com/`,
+          link: `https://github.com/HaydenBL/vsco-dler`,
         },
         {
           name: `QuiQuote`,
-          description: `An Android app for saving and sharing quotes.`,
+          description: `An Android app for saving and sharing quotes.\n(Currently down, need to open source)`,
           image: `quiquote.jpg`,
-          link: `https://play.google.com/store/apps/details?id=se.haydenblai.quiquote`,
         },
         {
           name: `Euclidean Calculator`,

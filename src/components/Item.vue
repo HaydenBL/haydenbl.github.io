@@ -5,7 +5,7 @@
                   enter-from="translate-x-4 opacity-0"
                   enter-to="translate-x-0 opacity-100"
   >
-    <a :href="item.link"
+    <a :href="item.link || 'javascript:void(0);'"
        class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu transition-transform ease-in-out duration-200 hover:scale-105 hover:rotate-1 hover:z-10"
        target="_blank"
     >
@@ -30,7 +30,7 @@
                            enter-from="translate-x-12 opacity-0"
                            enter-to="translate-x-0 opacity-100"
           >
-            <div class="h-full overflow-hidden">{{ item.description }}</div>
+            <div class="h-full overflow-hidden whitespace-pre-wrap">{{ item.description }}</div>
           </TransitionChild>
         </div>
       </div>

@@ -56,8 +56,9 @@ export default defineComponent({
         },
         {
           name: `QuiQuote`,
-          description: `An Android app for saving and sharing quotes.\n(Currently down, need to open source)`,
+          description: `An Android app for saving and sharing quotes.`,
           image: `quiquote.jpg`,
+          link: `https://github.com/HaydenBL/QuiQuote`,
         },
         {
           name: `Euclidean Calculator`,

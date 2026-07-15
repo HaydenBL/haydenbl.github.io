@@ -12,10 +12,9 @@
   },
   "devDependencies": {
     "@headlessui/vue": "^1.7.23",
+    "@tailwindcss/vite": "^4.3.2",
     "@vitejs/plugin-vue": "^6.0.8",
-    "autoprefixer": "^10.5.3",
-    "postcss": "^8.5.19",
-    "tailwindcss": "^3.4.19",
+    "tailwindcss": "^4.3.2",
     "typescript": "~5.9.3",
     "vite": "^8.1.4",
     "vue-tsc": "^3.3.7"

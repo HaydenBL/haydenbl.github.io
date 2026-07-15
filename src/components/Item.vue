@@ -16,7 +16,7 @@
       >
         <img class="absolute w-24 sm:w-44 top-4 sm:-top-6 -left-5 sm:-left-9 rounded-full drop-shadow-xl" :src="`/assets/${item.image || 'site_logo.jpg'}`" alt="Icon" />
       </TransitionChild>
-      <div class="ml-16 sm:ml-32 h-full flex-grow flex flex-col">
+      <div class="ml-16 sm:ml-32 h-full grow flex flex-col">
         <TransitionChild as="template"
                          enter="transition duration-500 ease-out"
                          enter-from="translate-x-12 opacity-0"

@@ -5,6 +5,7 @@
     "start": "yarn run dev",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:watch": "vite build --watch",
     "serve": "vite preview"
   },
   "dependencies": {

@@ -5,6 +5,7 @@ import { onBeforeUnmount, ref } from "vue";
 const MAX_TILT_DEG = 4;
 const HOVER_SCALE = 1.02;
 const PERSPECTIVE_PX = 700;
+const ENTER_MS = 220;
 const RETURN_MS = 300;
 
 function tiltIsWanted(): boolean {
@@ -24,8 +25,15 @@ export function useTilt() {
 
   const enabled = tiltIsWanted();
   let frame = 0;
+  let settleTimer = 0;
   let pointerX = 0;
   let pointerY = 0;
+
+  const clearSettle = () => {
+    if (!settleTimer) return;
+    clearTimeout(settleTimer);
+    settleTimer = 0;
+  };
 
   const render = () => {
     frame = 0;
@@ -53,10 +61,24 @@ export function useTilt() {
     el.style.setProperty("--gloss-strength", `${Math.min(Math.hypot(offsetX, offsetY), 1)}`);
   };
 
-  const onMouseEnter = () => {
+  const onMouseEnter = (event: MouseEvent) => {
     if (!enabled || !card.value) return;
-    // Drop the return transition so the tilt tracks the pointer without lag.
-    card.value.style.transition = "";
+    clearSettle();
+
+    // Ease into the tilt rather than snapping to wherever the pointer entered,
+    // then drop the transition once we are there so the rest of the hover
+    // tracks the pointer without lag.
+    card.value.style.transition = `transform ${ENTER_MS}ms ease-out`;
+    settleTimer = window.setTimeout(() => {
+      settleTimer = 0;
+      if (card.value) card.value.style.transition = "";
+    }, ENTER_MS);
+
+    // Start from the entry point instead of waiting on the first mousemove, so
+    // the ease covers the whole distance from flat to tilted.
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+    if (!frame) frame = requestAnimationFrame(render);
   };
 
   const onMouseMove = (event: MouseEvent) => {
@@ -72,6 +94,8 @@ export function useTilt() {
       cancelAnimationFrame(frame);
       frame = 0;
     }
+    // Otherwise a pending settle would strip the return transition mid-flight.
+    clearSettle();
     card.value.style.transition = `transform ${RETURN_MS}ms ease-out`;
     card.value.style.transform = "";
     // Leave --tilt-x/y alone so the gloss fades out in place instead of sliding.
@@ -80,6 +104,7 @@ export function useTilt() {
 
   onBeforeUnmount(() => {
     if (frame) cancelAnimationFrame(frame);
+    clearSettle();
   });
 
   return { card, onMouseEnter, onMouseMove, onMouseLeave };

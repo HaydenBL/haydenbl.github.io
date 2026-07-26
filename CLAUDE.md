@@ -26,9 +26,10 @@ Entrance animations use `TransitionRoot`/`TransitionChild` from `@headlessui/vue
 
 ## Agents
 
-`.claude/agents/` defines four specialists for this repo; delegate to them when a task fits:
+`.claude/agents/` defines five specialists for this repo; delegate to them when a task fits:
 
 - `vue-expert` — component/composable behaviour, reactivity, headlessui transitions, vue-tsc errors
 - `tailwind-expert` — Tailwind v4 utilities and theme tokens, layout/breakpoints, the card gloss and tint CSS
+- `web-platform-expert` — which browser API to use, support/compatibility, fallbacks and progressive enhancement
 - `portfolio-curator` — adding, editing, or reordering a project card (the `projects` array plus `public/assets/`)
 - `build-doctor` — build/type-check failures, dependency upgrades, the master → gh-pages deploy

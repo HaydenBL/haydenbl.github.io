@@ -13,9 +13,7 @@
        @mousemove="onMouseMove"
        @mouseleave="onMouseLeave"
     >
-      <div class="tint">
-        <img class="tint-image" :src="imageSrc" alt="" aria-hidden="true" />
-      </div>
+      <div v-if="accent" class="tint" :style="{ '--card-accent': accent }"></div>
       <div class="gloss"></div>
       <TransitionChild as="template"
                        enter="transition duration-500 ease-out"
@@ -57,8 +55,9 @@
 <script lang="ts">
 import ItemInterface from "../types/ItemInterface";
 import { TransitionRoot, TransitionChild } from "@headlessui/vue";
-import {defineComponent, PropType} from "vue";
+import {computed, defineComponent, PropType} from "vue";
 import { useTilt } from "../composables/useTilt";
+import { useAccentColor } from "../composables/useAccentColor";
 
 export default defineComponent({
   name: "Item",
@@ -72,21 +71,22 @@ export default defineComponent({
       required: false,
     }
   },
-  computed: {
-    imageSrc(): string {
-      return `/assets/${this.item?.image || 'site_logo.jpg'}`;
-    }
-  },
-  setup() {
-    return useTilt();
+  setup(props) {
+    const imageSrc = computed(() => `/assets/${props.item?.image || 'site_logo.jpg'}`);
+    return {
+      ...useTilt(),
+      imageSrc,
+      accent: useAccentColor(imageSrc),
+    };
   }
 })
 </script>
 
 <style scoped>
 /*
- * Card tint: the item's own icon, blown up and blurred into a wash of colour.
- * Same URL as the icon, so it costs no extra request.
+ * Card tint: a wash in the icon's own accent colour, sampled off the image by
+ * useAccentColor() and handed down as --card-accent. It pools at the top-left
+ * corner, where the icon sits, and clears well before the description text.
  */
 .tint {
   position: absolute;
@@ -94,18 +94,22 @@ export default defineComponent({
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
+  background:
+      radial-gradient(120% 125% at 6% 0%,
+          color-mix(in srgb, var(--card-accent) 45%, transparent) 0%,
+          color-mix(in srgb, var(--card-accent) 18%, transparent) 45%,
+          transparent 78%),
+      linear-gradient(135deg,
+          color-mix(in srgb, var(--card-accent) 12%, transparent) 0%,
+          transparent 70%);
+  /* Sampling finishes a beat after the card lands, so ease it in rather than
+   * letting the colour pop on. */
+  animation: tint-in 450ms ease-out both;
 }
 
-.tint-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Overscaled so the blur samples image rather than the transparent gutter
-   * outside it, which would otherwise wash the card edges out. */
-  transform: scale(1.6);
-  filter: blur(28px) saturate(1.7);
-  /* Over the card's white, this is what keeps the tint pale enough to read on. */
-  opacity: 0.38;
+@keyframes tint-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /*

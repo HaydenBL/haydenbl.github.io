@@ -2,8 +2,8 @@ import { onBeforeUnmount, ref } from "vue";
 
 // Tuning knobs for the hover tilt. Tweak these first if the effect feels off.
 // The gloss itself is styled in Item.vue, driven by the custom properties below.
-const MAX_TILT_DEG = 8;
-const HOVER_SCALE = 1.04;
+const MAX_TILT_DEG = 4;
+const HOVER_SCALE = 1.02;
 const PERSPECTIVE_PX = 700;
 const RETURN_MS = 300;
 

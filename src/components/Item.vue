@@ -139,8 +139,8 @@ export default defineComponent({
 /* Specular highlight — reads on the icon; a no-op on the white card face. */
 .gloss::before {
   background: radial-gradient(circle farthest-side,
-      rgb(255 255 255 / 0.8),
-      rgb(255 255 255 / 0.15) 45%,
+      rgb(255 255 255 / 0.45),
+      rgb(255 255 255 / 0.08) 45%,
       rgb(255 255 255 / 0) 75%);
   transform: translate(calc(var(--tilt-x, 0) * -18%), calc(var(--tilt-y, 0) * -18%));
 }
@@ -148,8 +148,8 @@ export default defineComponent({
 /* Falloff over the receding half, wide enough to shade rather than spot. */
 .gloss::after {
   background: radial-gradient(circle farthest-side,
-      rgb(15 23 42 / 0.11),
-      rgb(15 23 42 / 0.04) 55%,
+      rgb(15 23 42 / 0.06),
+      rgb(15 23 42 / 0.02) 55%,
       rgb(15 23 42 / 0) 85%);
   transform: translate(calc(var(--tilt-x, 0) * 26%), calc(var(--tilt-y, 0) * 26%));
 }

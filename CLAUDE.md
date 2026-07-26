@@ -23,3 +23,12 @@ The whole site is a single page defined in `src/App.vue`, which renders `Header.
 Entrance animations use `TransitionRoot`/`TransitionChild` from `@headlessui/vue`, driven by staggered `setTimeout` calls in `App.vue`'s `created()` hook that flip each item's `show` flag.
 
 `public/` also contains standalone static sub-sites served as-is: `euclidean-calc/` (a prebuilt Angular app) and `QuiQuote/` (privacy/license pages). `old-site/` at the repo root is the retired previous version of the site and is not part of the build.
+
+## Agents
+
+`.claude/agents/` defines four specialists for this repo; delegate to them when a task fits:
+
+- `vue-expert` — component/composable behaviour, reactivity, headlessui transitions, vue-tsc errors
+- `tailwind-expert` — Tailwind v4 utilities and theme tokens, layout/breakpoints, the card gloss and tint CSS
+- `portfolio-curator` — adding, editing, or reordering a project card (the `projects` array plus `public/assets/`)
+- `build-doctor` — build/type-check failures, dependency upgrades, the master → gh-pages deploy

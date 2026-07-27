@@ -18,6 +18,7 @@
     >
       <div class="shade"></div>
       <div v-if="accent" class="tint" :style="{ '--card-accent': accent }"></div>
+      <div class="grain"></div>
       <div class="gloss"></div>
       <div class="rim"></div>
       <TransitionChild as="template"
@@ -118,6 +119,43 @@ export default defineComponent({
 @keyframes tint-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/*
+ * Cardstock. A fractalNoise tile from an inline SVG, so there is no network
+ * asset to ship and it rasterises at device resolution — the tooth stays the
+ * same physical size on a Retina panel as on a 1x one.
+ *
+ * multiply, not plain alpha: paper doesn't emit light, it only ever subtracts,
+ * and multiplying preserves the accent tint's hue where a neutral grey overlay
+ * would wash it out.
+ *
+ * The mask is the whole point. Its centre tracks +tilt — the same side
+ * .gloss::after shades — so the receding half goes textured and dark while the
+ * lit half stays smooth. That is how matte stock actually reads under a moving
+ * light, and putting the texture opposite the highlight widens the gap between
+ * the two halves instead of the grain darkening the very area the gloss is
+ * trying to brighten. At rest every stop resolves to full alpha, so the grain
+ * is even until you hover.
+ *
+ * Cost: the stop alphas are calc()'d off --gloss-strength, so this repaints per
+ * frame like .rim — same mitigation, a childless overlay whose dirty layer is
+ * an empty box. --grain-strength is the one knob worth turning.
+ */
+.grain {
+  --grain-strength: 0.18;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--grain-strength);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23c)'/%3E%3C/svg%3E");
+  mask-image: radial-gradient(circle farthest-side at
+      calc(50% + var(--tilt-x, 0) * 30%) calc(50% + var(--tilt-y, 0) * 30%),
+      rgb(0 0 0 / 1) 0%,
+      rgb(0 0 0 / calc(1 - var(--gloss-strength, 0) * 0.5)) 55%,
+      rgb(0 0 0 / calc(1 - var(--gloss-strength, 0) * 0.75)) 100%);
 }
 
 /*

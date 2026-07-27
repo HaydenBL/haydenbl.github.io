@@ -77,7 +77,7 @@ export default defineComponent({
         },
         {
           name: `Quora Clone`,
-          description: `An old PHP project for a web and database class project in university. It's very bad!`,
+          description: `An old PHP project for a university web and database assignment. It's very bad!`,
           image: `quora.jpg`,
           kind: `Coursework`,
           link: `https://github.com/HaydenBL/Quora-Clone`,

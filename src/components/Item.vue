@@ -18,13 +18,13 @@
     >
       <div class="shade"></div>
       <div v-if="accent" class="slab" :style="{ '--card-accent': accent }"></div>
+      <!-- Decorative: the adjacent <h2> already names the project. The
+           intrinsic size is stated so the box is reserved before decode. -->
       <TransitionChild as="template"
                        enter="transition duration-500 ease-out"
                        enter-from="rotate-45 scale-70 opacity-0"
                        enter-to="rotate-0 scale-100 opacity-100"
       >
-        <!-- Decorative: the adjacent <h2> already names the project. The
-             intrinsic size is stated so the box is reserved before decode. -->
         <img class="icon" :src="imageSrc" alt="" width="512" height="512" />
       </TransitionChild>
       <div class="body">

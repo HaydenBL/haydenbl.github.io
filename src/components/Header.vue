@@ -1,8 +1,32 @@
 <template>
 
+  <!--
+    The height is explicit because nothing else here can imply it. rotate and
+    translate don't affect layout, so this box's content height is the *unrotated*
+    939px stack below — a number with no relationship to where the banner actually
+    lands. It was `pb-64`, which made the box 1195px tall at every width while the
+    art ends at 383/553/735/1055 depending on breakpoint, and an absolutely
+    positioned box still extends the document's scroll area. That was up to 460px
+    of empty box the page could scroll into.
+
+    Each value is where the art's bottom edge crosses the *left* viewport edge —
+    its lowest visible point, since the edge runs up and to the right — plus a few
+    px. Derived as translate-x + translate-y + 2 * (stack height / sqrt(2));
+    re-measure if the translate ladder or the stack changes.
+
+    2xl is the exception: there the grid gains its third column, so the content
+    collapses from 1072px to 864px while the ladder stays frozen at its xl values
+    and the art still reaches 1055px. Since the art can't fit, it is clipped at
+    the viewport instead, which puts the cut on the window's bottom edge — the same
+    way the banner already bleeds off the top and left. Caveat: on a 2xl-wide but
+    short window (under ~870px tall) the page scrolls to the content and the cut
+    becomes visible mid-scroll. The real fix for that is the missing 2xl rung in
+    the ladder (AUDIT.md, Phase 6), which is a composition change, not this.
+  -->
   <TransitionRoot as="div"
                   :show="show"
-                  class="absolute top-0 w-full overflow-hidden pb-64">
+                  class="absolute top-0 w-full overflow-hidden
+                         h-[400px] md:h-[570px] lg:h-[750px] xl:h-[1060px] 2xl:h-dvh">
     <div class="text-white origin-top-left
                 text-5xl md:text-6xl
                 -rotate-45

@@ -33,7 +33,7 @@ export default defineComponent({
       setTimeout(() => this.projects[i].show = true, +i * ITEM_DELAY + INITIAL_DELAY);
     }
   },
-  data() {
+  data(): { projects: ItemInterface[] } {
     return {
       projects: [
         {
@@ -72,7 +72,7 @@ export default defineComponent({
           image: `quora.jpg`,
           link: `https://github.com/HaydenBL/Quora-Clone`,
         },
-      ] as ItemInterface[]
+      ]
     }
   },
 })

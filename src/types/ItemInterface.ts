@@ -3,5 +3,6 @@ export default interface ItemInterface {
     description: string,
     image: string,
     link: string,
-    show: boolean,
+    // Set by App.vue's staggered entrance timers, so absent in the source data.
+    show?: boolean,
 }

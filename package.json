@@ -1,6 +1,9 @@
 {
   "name": "hayden-portfolio",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
     "start": "yarn run dev",
     "dev": "vite",

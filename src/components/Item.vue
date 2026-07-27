@@ -1,6 +1,5 @@
 <template>
-  <TransitionRoot v-if="item"
-                  :show="!!item.show"
+  <TransitionRoot :show="!!item.show"
                   enter="transition duration-300 ease-out"
                   enter-from="translate-x-4 opacity-0"
                   enter-to="translate-x-0 opacity-100"
@@ -68,11 +67,11 @@ export default defineComponent({
   props: {
     item: {
       type: Object as PropType<ItemInterface>,
-      required: false,
+      required: true,
     }
   },
   setup(props) {
-    const imageSrc = computed(() => `/assets/${props.item?.image || 'site_logo.jpg'}`);
+    const imageSrc = computed(() => `/assets/${props.item.image}`);
     return {
       ...useTilt(),
       imageSrc,

@@ -24,6 +24,8 @@ Entrance animations use `TransitionRoot`/`TransitionChild` from `@headlessui/vue
 
 `public/` also contains standalone static sub-sites served as-is: `euclidean-calc/` (a prebuilt Angular app) and `QuiQuote/` (privacy/license pages). `old-site/` at the repo root is the retired previous version of the site and is not part of the build.
 
+`public/junteo/` is an **intentional placeholder**, not dead code. It serves a privacy page at `haydenblai.se/junteo/privacy/` ahead of an app-store submission, so it is deliberately live while being referenced from nowhere in `src/` and having no project card. Leave it in place; it gets a card if and when the app ships.
+
 ## Agents
 
 `.claude/agents/` defines five specialists for this repo; delegate to them when a task fits:

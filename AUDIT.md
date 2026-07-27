@@ -29,6 +29,8 @@ This splits the backlog into two tracks:
 
 Everything lands on `updates` and reaches production through one `updates` → `master` merge. Sequence the phases so that merge is clean.
 
+**Decision (2026-07-26): Hayden is doing all phases on `updates`, then merging to `master` as a single release.** He considered and declined applying Phase 1 to `master` separately to fix the two live bugs sooner. So: no partial deploys, nothing reaches production until every phase is done, and the merge is the release. Don't push to `master` piecemeal.
+
 **Note:** `AUDIT.md` is currently *staged* in git (`git status` shows `A AUDIT.md`), so it will ride along with the next commit unless you unstage it. Decide whether you want it tracked.
 
 ---
@@ -38,7 +40,8 @@ Everything lands on `updates` and reaches production through one `updates` → `
 Highest impact per unit of risk. No behaviour change; verified by `yarn build` plus one look at 375px. Ships as a single commit.
 
 - [x] **`og:image` is relative → every link preview is broken.** `index.html:20` is `content="/assets/hero_img.jpg"`. OG crawlers fetch from their own servers, so a path-relative value resolves to nothing on Slack, Discord, iMessage, LinkedIn, X. Change to `https://haydenblai.se/assets/hero_img.jpg`. The image is already a correct 1200×630. **Verified, and live on master.**
-- [x] **Card icons are clipped on every phone.** `App.vue:5` `p-2` + `App.vue:7` `px-2` = 16px inset, vs. `Item.vue:23` `-left-5` = 20px outside the card → net **−4px**. A slice is shaved off all six circular icons and the drop shadow is cut square. Resolves at `sm`. Fix: `p-2` → `px-6 py-2`. **Verified by measurement, and live on master** (master's `Item.vue:17` has the same `-left-5`).
+- [x] **Card icons are clipped on every phone.** `App.vue:5` `p-2` + `App.vue:7` `px-2` = 16px inset, vs. `Item.vue:23` `-left-5` = 20px outside the card → net **−4px**. A slice is shaved off all six circular icons and the drop shadow is cut square. Resolves at `sm`. Fixed via `p-2` → `px-6 py-2` on `App.vue:5`. **Verified by measurement, and live on master** (master's `Item.vue:17` has the same `-left-5`).
+  - **Tradeoff checked and accepted (Hayden, 2026-07-26, devtools responsive mode @ 375px — looks fine).** `px-6` widens the base inset to 32px, clearing the icon by 12px, but narrows cards by 32px (375px viewport → 311px of content). The alternative was `-left-5` → `-left-3` on `Item.vue:23`, preserving card width at only 4px icon clearance. **Settled — don't re-raise.** Note the narrower card slightly reduces the room the Phase 3 description-clipping item has to work with.
 - [x] **No `twitter:card`** → X renders a bare link, not a card. Add `twitter:card = summary_large_image`. Also missing: `og:url`, `og:type = website`, `og:image:alt`, `<link rel="canonical">`.
 - [x] **Manifest is not installable.** `public/site.webmanifest` has no `start_url` — a hard Chrome installability criterion. Add `"start_url": "/"`. Also missing `short_name` (Android truncates the 19-char `name`), `description`, `id`, and `"purpose": "maskable"` on the 512px icon. **Verified.**
 - [x] **Font preconnect is on the wrong host and missing `crossorigin`.** `index.html:6-7`. Fonts fetch in CORS mode, so a `fonts.gstatic.com` preconnect without `crossorigin` opens a socket the fetch can't reuse. `fonts.googleapis.com` — the render-blocking stylesheet host actually on the critical path — has no preconnect at all.
@@ -63,7 +66,7 @@ Hayden's judgement, protected by Phase 2. Reordering/rewording cards is the task
 - [?] **VSCO card revives a trademark problem already resolved once.** `App.vue:52-56`. The linked repo's own README says the tool was taken down *and* that the domain registrar previously required removing VSCO's branding after VSCO apparently contacted them. The card still uses the exact retired product name, repeats "VSCO" in the description, and presents it present-tense as a live "online tool." Suggest renaming to the repo name (`vsco-dler`) or something generic, rewritten past-tense / source-only.
 - [?] **QuiQuote reads present-tense but the app was delisted.** `App.vue:58-62`. Repo README: delisted for being out of date, then open-sourced.
 - [?] **`public/junteo/` is live but wired to nothing.** `public/junteo/privacy/index.html` returns 200 at `haydenblai.se/junteo/privacy/`, referenced nowhere in `src/`, no card, not in CLAUDE.md. Looks like a privacy stub published ahead of an app-store submission. Decide: add a card when ready, or document it as an intentional placeholder.
-- [ ] Euclidean Calculator description (`App.vue:65`, 123 chars) is at or past the clip budget of the fixed `h-40 overflow-hidden` card — flagged independently by two agents. Check at 375px.
+- [x] ~~Euclidean Calculator description is clipping.~~ **Did not reproduce — checked at 375px, renders fine.** Two agents predicted this from the character count (123 chars in a fixed `h-40 overflow-hidden` card) and both were wrong. **Don't re-raise for this card.** The underlying constraint is still real, though: `Item.vue:42` hard-clips with no ellipsis or fade, so a *longer* description on a future card can still silently truncate. Treat ~120 characters as the practical ceiling when adding a project.
 - [ ] Quora Clone description (`App.vue:69-74`) breaks tone with the rest ("It's very bad!") and repeats the word "project."
 - [x] All 5 GitHub links and both sub-sites return 200 — **no dead links.** Re-check periodically.
 
@@ -121,8 +124,10 @@ The site currently does not state whose it is in any machine-readable way. Needs
 
 Tailwind v4 migration is clean — no config files, no `@tailwind` directives, no v3 leftovers; the v4 transform-property split broke nothing. Contrast passes AA at worst case (12.4:1 tint, 9.7:1 under gloss). No `any`, no non-null assertions, no listener leaks. headlessui transition nesting is correct. Touch users are not stranded. `target="_blank"` without `rel="noopener"` is safe at this site's browser floor (modern browsers imply it), though adding it is free.
 
-## Needs eyes on real hardware
+## Hardware checks — all clear except iPad
 
-- **Safari (macOS + iOS):** `.gloss` uses `overflow: hidden` + `border-radius: inherit` (`Item.vue:121-129`) to clip transformed pseudo-elements — a configuration WebKit has historically leaked transformed children through. No current bug report found; unverified either way. Hover a card and watch the icon's circular clip.
-- **375px viewport:** the icon shave (Phase 1) and the Euclidean Calculator description clip (Phase 3).
+Everything on this list has been checked except the iPad item, which is gated on Hayden having the device to hand.
+
+- [x] ~~**Safari:** `.gloss` leaking transformed pseudo-elements past rounded corners.~~ **Checked by Hayden 2026-07-26 in Safari — renders fine. Don't re-raise.** The `overflow: hidden` + `border-radius: inherit` clip at `Item.vue:121-129` holds. iOS was never at risk: the gloss is hover-gated, so it never animates on touch and the leak can't manifest — macOS Safari was the entire test.
+- ~~**375px viewport:** the icon shave (Phase 1) and the Euclidean description clip (Phase 3)~~ — both checked 2026-07-26, both fine. Nothing further needed at this width.
 - **iPad + Magic Keyboard:** confirm the tilt gate before changing it (Phase 6).

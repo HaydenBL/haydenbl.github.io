@@ -4,9 +4,9 @@
                   enter-from="translate-x-4 opacity-0"
                   enter-to="translate-x-0 opacity-100"
   >
-    <a :href="item.link || 'javascript:void(0);'"
+    <a :href="item.link || undefined"
        ref="card"
-       class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu hover:z-10"
+       class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
        target="_blank"
        @mouseenter="onMouseEnter"
        @mousemove="onMouseMove"
@@ -20,7 +20,10 @@
                        enter-to="rotate-0 scale-100 opacity-100"
       >
         <div class="absolute w-24 sm:w-44 top-4 sm:-top-6 -left-5 sm:-left-9 rounded-full drop-shadow-xl">
-          <img class="w-full rounded-full" :src="imageSrc" alt="Icon" />
+          <!-- Decorative: the adjacent <h2> already names the project. The
+               intrinsic size is stated so the box is reserved before decode;
+               h-auto keeps the height attribute from fighting w-full. -->
+          <img class="w-full h-auto rounded-full" :src="imageSrc" alt="" width="512" height="512" />
           <div class="gloss"></div>
         </div>
       </TransitionChild>

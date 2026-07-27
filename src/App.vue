@@ -1,8 +1,15 @@
 <template>
 
+  <!--
+    The only text statement of whose site this is. The wordmarks in Header.vue
+    are raw <path> geometry with no text alternative, so without this the page
+    has no <h1> and never names its owner in a machine-readable way.
+  -->
+  <h1 class="sr-only">Hayden Blaise Lueck</h1>
+
   <Header></Header>
 
-  <div class="mt-64 md:mt-72 lg:mt-96 px-6 py-2 sm:p-8">
+  <main class="mt-64 md:mt-72 lg:mt-96 px-6 py-2 sm:p-8">
 
     <div class="px-2 sm:px-8 py-6">
       <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-12 max-w-(--breakpoint-2xl) m-auto">
@@ -10,7 +17,7 @@
       </div>
     </div>
 
-  </div>
+  </main>
 
 </template>
 

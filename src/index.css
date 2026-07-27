@@ -14,9 +14,25 @@
 /*
   The site is deliberately light-only. Declaring it stops Chrome's Auto Dark
   Theme on Android from algorithmically inverting the page, which it does badly
-  here: the .tint/.gloss overlays paint on top of the card text, so an inversion
+  here: the .slab/.gloss overlays paint on top of the card text, so an inversion
   leaves dark text under a non-inverted accent wash.
 */
 :root {
   color-scheme: light;
+}
+
+/*
+  The accent wedge on each card is placed from --wedge (its width at the card's
+  top edge), and hover animates it. A custom property is an unanimatable token
+  stream until it is registered with a syntax, so without this the wipe snaps
+  instead of sliding. Registered here rather than in Item.vue's scoped block
+  because @property is global either way.
+*/
+@property --wedge {
+  syntax: "<length>";
+  inherits: true;
+  /* Inert. Every .card sets --wedge itself, so this is never the value that
+     draws anything — @property just refuses a <length> without one. Deliberately
+     not a plausible wedge width, so it can't be mistaken for the real knob. */
+  initial-value: 0px;
 }

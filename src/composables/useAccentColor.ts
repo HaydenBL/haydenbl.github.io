@@ -7,11 +7,45 @@ const SAMPLE_SIZE = 48;
 const BITS = 4;
 
 // The accent gets pushed into this range so every card reads as the same
-// family of wash, however muddy or neon the source icon happens to be.
+// family of colour, however muddy or neon the source icon happens to be.
 const MIN_SATURATION = 0.35;
 const MAX_SATURATION = 0.85;
-const MIN_LIGHTNESS = 0.42;
-const MAX_LIGHTNESS = 0.62;
+
+// Below this there is no hue worth keeping. rgbToHsl reports hue 0 when a colour
+// has no chroma at all, and hue 0 is red — so clamping a grey winner up to
+// MIN_SATURATION invents a colour the icon does not have. A monochrome icon gets
+// a grey wedge.
+const NEUTRAL_SATURATION = 0.08;
+
+// Lightness is not clamped to a fixed band like saturation is, because the
+// colour is used for the wedge that sits directly behind the icon — and the
+// wedge is sampled *from* that icon, so left alone it converges on exactly the
+// colour it has to be distinguishable from. Instead it is placed a fixed
+// distance above the lightness of the icon's own edge. Always above, never
+// below: a light field with a solid mark on it is one relationship, and holding
+// to it keeps six cards reading as a set.
+const LIGHTNESS_GAP = 0.22;
+// The ceiling is the binding one, and it is not about the icon: past ~0.86 the
+// wedge stops separating from the card face it is drawn on. Clearing the icon
+// and staying off the face pull in opposite directions, so this is the
+// compromise, not a safety rail.
+//
+// Neither bound is a contrast guarantee — HSL lightness is not luminance, and
+// the spread across hues at one L dwarfs the spread across this whole band. At
+// L 0.55, S 0.85 the wedge runs 2.7:1 against black text at hue 240 and 16.9:1
+// at hue 60. So the floor exists only so a dark-edged icon still gets a field
+// instead of a near-black slab; it does not promise the card text is readable
+// over it. The six current icons all resolve to 0.65-0.86, so nothing sits near
+// it today — check the numbers in Item.vue's geometry comment before adding an
+// icon with a dark edge and a saturated blue or purple mark.
+const MIN_LIGHTNESS = 0.55;
+const MAX_LIGHTNESS = 0.86;
+
+// The annulus, as a fraction of the icon's radius, taken to be "the icon's
+// edge" — inside the rounded clip, outside the mark in the middle. Only the
+// top-left quadrant is measured, since that is the corner the wedge is behind.
+const EDGE_INNER = 0.55;
+const EDGE_OUTER = 0.92;
 
 type Bucket = { r: number; g: number; b: number; count: number; score: number };
 
@@ -51,11 +85,44 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 }
 
 /**
+ * Mean lightness of the icon's edge in the quadrant the wedge sits behind. This
+ * is what the wedge actually has to be told apart from — not the icon's overall
+ * colour, and not the accent, but the specific ring of pixels the diagonal runs
+ * underneath.
+ */
+function edgeLightness(pixels: Uint8ClampedArray): number | null {
+  const radius = SAMPLE_SIZE / 2;
+  const inner = EDGE_INNER * radius;
+  const outer = EDGE_OUTER * radius;
+  let total = 0;
+  let count = 0;
+
+  for (let i = 0; i < pixels.length; i += 4) {
+    if (pixels[i + 3] < 128) continue;
+    const index = i / 4;
+    const x = (index % SAMPLE_SIZE) + 0.5;
+    const y = Math.floor(index / SAMPLE_SIZE) + 0.5;
+    if (x > radius || y > radius) continue;
+
+    const distance = Math.hypot(x - radius, y - radius);
+    if (distance < inner || distance > outer) continue;
+
+    total += rgbToHsl(pixels[i], pixels[i + 1], pixels[i + 2])[2];
+    count++;
+  }
+
+  return count ? total / count : null;
+}
+
+/**
  * Picks the colour that carries the icon, which is rarely the most common one:
  * logos sit on flat white or black fields that would otherwise win by volume.
  * Pixels are bucketed by quantised colour and each bucket scored by how much
  * area it covers *and* how much colour it actually has, so a small vivid mark
  * beats a large pale field.
+ *
+ * The winner supplies the hue and saturation. The lightness comes from
+ * edgeLightness() instead, for the reason given on LIGHTNESS_GAP above.
  */
 function dominantColor(image: HTMLImageElement): string | null {
   const canvas = document.createElement("canvas");
@@ -112,10 +179,18 @@ function dominantColor(image: HTMLImageElement): string | null {
       winner.g / winner.count,
       winner.b / winner.count,
   );
+
+  // No measurable edge — a fully transparent border, say. Fall back to the
+  // winner's own lightness, which is the pre-wedge behaviour.
+  const edge = edgeLightness(pixels);
+  const target = edge === null ? lightness : edge + LIGHTNESS_GAP;
+
   const [r, g, b] = hslToRgb(
       hue,
-      Math.min(Math.max(saturation, MIN_SATURATION), MAX_SATURATION),
-      Math.min(Math.max(lightness, MIN_LIGHTNESS), MAX_LIGHTNESS),
+      saturation < NEUTRAL_SATURATION
+          ? 0
+          : Math.min(Math.max(saturation, MIN_SATURATION), MAX_SATURATION),
+      Math.min(Math.max(target, MIN_LIGHTNESS), MAX_LIGHTNESS),
   );
   return `rgb(${r} ${g} ${b})`;
 }
@@ -143,7 +218,7 @@ function load(src: string): Promise<string | null> {
 /**
  * Resolves to the accent colour of the image at `src` as a CSS colour, or null
  * while it is still loading and if it cannot be sampled. Callers should treat
- * null as "no tint" rather than waiting on it.
+ * null as "no wedge" rather than waiting on it.
  */
 export function useAccentColor(src: Ref<string>) {
   const accent = ref<string | null>(null);

@@ -17,8 +17,14 @@ function tiltIsWanted(): boolean {
 /**
  * Tilts an element toward the pointer. Alongside the transform it publishes the
  * pointer position as --tilt-x / --tilt-y (each -1..1, from the element centre)
- * and --gloss-strength (0..1), which descendants use to place their own gloss —
- * inheritance means a surface only has to opt in with CSS, no extra wiring here.
+ * and --gloss-strength (0..1), which the card's overlays read to place their own
+ * lighting — they inherit, so a surface only has to opt in with CSS, no extra
+ * wiring here.
+ *
+ * It also publishes --tilt-transition, the duration the transform should ease
+ * over. The element is expected to spend it itself, e.g.
+ *
+ *     transition: transform var(--tilt-transition, 0s) ease-out, …;
  */
 export function useTilt() {
   const card = ref<HTMLElement | null>(null);
@@ -66,12 +72,17 @@ export function useTilt() {
     clearSettle();
 
     // Ease into the tilt rather than snapping to wherever the pointer entered,
-    // then drop the transition once we are there so the rest of the hover
-    // tracks the pointer without lag.
-    card.value.style.transition = `transform ${ENTER_MS}ms ease-out`;
+    // then drop the duration once we are there so the rest of the hover tracks
+    // the pointer without lag.
+    //
+    // A duration, not a whole transition: writing style.transition here sets an
+    // inline value that outranks the stylesheet, which silently cancelled every
+    // other transition the element declared for as long as the pointer was over
+    // it. Anything else on the card that eases on hover would snap instead.
+    card.value.style.setProperty("--tilt-transition", `${ENTER_MS}ms`);
     settleTimer = window.setTimeout(() => {
       settleTimer = 0;
-      if (card.value) card.value.style.transition = "";
+      if (card.value) card.value.style.setProperty("--tilt-transition", "0s");
     }, ENTER_MS);
 
     // Start from the entry point instead of waiting on the first mousemove, so
@@ -96,7 +107,7 @@ export function useTilt() {
     }
     // Otherwise a pending settle would strip the return transition mid-flight.
     clearSettle();
-    card.value.style.transition = `transform ${RETURN_MS}ms ease-out`;
+    card.value.style.setProperty("--tilt-transition", `${RETURN_MS}ms`);
     card.value.style.transform = "";
     // Leave --tilt-x/y alone so the gloss fades out in place instead of sliding.
     card.value.style.setProperty("--gloss-strength", "0");

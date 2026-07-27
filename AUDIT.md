@@ -1,6 +1,8 @@
 # Audit backlog — haydenblai.se
 
-Findings from a five-agent audit (vue, tailwind, web-platform, build, content) run 2026-07-26 against commit `886744b`. Working doc, meant to be picked up across sessions. Nothing here is fixed yet.
+Findings from a five-agent audit (vue, tailwind, web-platform, build, content) run 2026-07-26 against commit `886744b`. Working doc, meant to be picked up across sessions.
+
+**Phases 1–5 are closed.** Phase 6 is the only one still open, and it is the merge gate. Note that the card was substantially redesigned after the audit was written — see **Card redesign** below before trusting any `Item.vue` line reference in Phase 6.
 
 Status key: `[ ]` todo · `[x]` done · `[?]` needs Hayden's judgement, not a code fix
 
@@ -115,21 +117,44 @@ The site currently does not state whose it is in any machine-readable way. Needs
 **Phase 5 done 2026-07-26.** All seven items applied and verified against the *built* bundle, not just the source: `h1`/`main` present in the compiled render function, `aria-label` on both social anchors, `alt=""`, `width`/`height`/`h-auto` on the icon, all five new utilities compiled in. **One caveat: none of it has been checked with an actual screen reader or a keyboard Tab-through** — the verification was structural.
   - **Trap for whoever verifies this in `dist/`:** the minifier emits tag names in backticks, so grepping for `"h1"` or `"main"` reports them missing. They ship as `` Y(`h1`,{class:`sr-only`},…) ``. Search with backticks or you'll conclude the fix didn't land.
 
+## Card redesign (2026-07-26) — not an audit item, but read it first
+
+Done on `updates` after the audit was written, so several Phase 6 line references below point at code that has moved. Reviewed 2026-07-26; findings applied. What changed:
+
+- **`.tint` → `.slab`.** The soft radial wash is gone, replaced by a hard 45° wedge in the sampled accent, echoing the header's red slab. Its width is `--wedge`, a plain px length, animated on hover.
+- **`ItemInterface.kind`** added (optional) and a `.meta` footer row renders it opposite a `GitHub`/`Open` label.
+- **Card interior rebuilt.** No more flex row with the icon hanging outside at `-left-5`; the icon is absolutely positioned *inside* the card, and title/description/meta are one straight column at `--gutter`.
+- **`useTilt` publishes `--tilt-transition`** instead of writing `style.transition`. This was a real bug fix: the inline shorthand outranked the stylesheet and cancelled every other transition on the card while hovered.
+
+**Load-bearing things a future edit can silently break:**
+
+- `--gutter = resting --wedge − 15 + 8`. The 15 is `.body`'s top padding. Change one, recompute the other, or the wedge collides with the title at rest.
+- `@property --wedge` in `src/index.css` is what makes the wipe animate. Delete it and the hover snaps — with no error anywhere. It needs Firefox 128+; below that it degrades to a snap.
+- `--wedge` must stay close to the card height (the edge runs out at `y = --wedge`) and must *not* land within a pixel or two of the icon's circle, which reads as a clipping bug. Both are derived in `Item.vue`'s geometry comment with the arithmetic shown.
+- The `sm` `:hover` rule must stay *after* the base `:hover`, or the narrow hover value wins at every width.
+
+**Verified, don't redo:** `yarn build` clean on Node 22.23.1; `@property`, `line-clamp-2`, `scale-70` and the scoped `@keyframes` rename all confirmed present in `dist/`; accent algorithm re-run offline against all six real icons.
+
+**Deliberate, don't re-flag:** the wedge runs *under* the text on hover rather than the gutter being sized to clear it (that would cost 52–58px of text column in both states); the icon does not move on hover; `.card` sets no `overflow`; the reduced-motion block covers hover CSS only, because the entrance is a separate open item below.
+
+---
+
 ## Phase 6 — motion & GPU (MERGE GATE)
 
 **This is the last chance to not ship these.** None of it exists on `master`. Do it with a browser open — 375px, desktop hover, and OS Reduce Motion toggled — and with Hayden watching, because he's been tuning this system by feel (`Smoother transition into hover effect`, `Less intense gloss/tilt`, `Improve how we get the card background color`).
 
-- [ ] **Reduced motion is ignored everywhere except the hover tilt.** `useTilt.ts:14` is the only place in the repo reading the query (grep-confirmed), so the *subtlest* effect is the only one suppressed — while six cards slide in on a 70ms stagger (`App.vue:29-35`), each icon spins 45° and scales 70→100% (`Item.vue:19-21`), and the wordmarks travel 320–480px (`Header.vue:19`, `:38`). Gate the stagger and swap enter classes for an opacity-only fade. **Flagged independently by three agents.** Note the entrance animations *do* exist on master, so this one is partly a live defect.
+- [ ] **Reduced motion is ignored by every entrance animation.** Partly narrowed by the redesign, not closed. `Item.vue` now carries a `@media (prefers-reduced-motion: reduce)` block that kills the wedge wipe and the `.go` nudge, so the *hover* story is covered in both JS (`useTilt.ts:14`) and CSS. The **entrance** story is untouched: six cards still slide in on a 70ms stagger (`App.vue:36-42`), each icon still spins 45° and scales 70→100% (`Item.vue:21-29`), and the wordmarks still travel 320–480px (`Header.vue:19`, `:38`). Gate the stagger and swap enter classes for an opacity-only fade. **Flagged independently by three agents.** Note the entrance animations *do* exist on master, so this one is partly a live defect.
 - [x] ~~**24 permanently-promoted compositor layers.**~~ **Fixed 2026-07-26** — `will-change: transform` deleted from `.gloss::before`/`::after`; the rAF-driven transform composites fine without it. Note the new `.rim` added alongside is deliberately *not* promoted: its tilt-driven `box-shadow` offsets repaint per frame by nature, which is why it sits on its own childless overlay rather than on the card, where it would re-rasterise the icon and text on every pointer move.
 - [ ] **iPad + Magic Keyboard never gets the tilt.** `useTilt.ts:13` gates on `(hover: hover)`; WebKit on iPadOS reports the *primary* pointer as the touchscreen regardless of an attached trackpad ([WebKit #209292](https://bugs.webkit.org/show_bug.cgi?id=209292), open since iOS 13.4). `(any-hover: hover)` is Baseline since 2018 and fixes it.
-  - **TRAP:** Tailwind v4's `hover:` variant compiles to `@media (hover: hover)`, so changing only the composable desyncs the two gates — `hover:z-10` (`Item.vue:10`) and the header's `hover:scale-110 hover:rotate-6` would stay off on iPad while the tilt turned on. Move the z-index into the composable or consciously accept the split.
-- [ ] `enabled` is latched once at setup (`useTilt.ts:26`) — toggling OS Reduce Motion or plugging in a mouse needs a page reload. Fix with a `matchMedia` `change` listener (and tear it down on unmount).
+  - **TRAP:** Tailwind v4's `hover:` variant compiles to `@media (hover: hover)`, so changing only the composable desyncs the two gates — `hover:z-10` (`Item.vue:13`) and the header's `hover:scale-110 hover:rotate-6` (`Header.vue:22`, `:28`) would stay off on iPad while the tilt turned on. Move the z-index into the composable or consciously accept the split.
+  - **Second gate since the redesign:** `.card:hover { --wedge }` is now the card's main gesture and it is plain CSS `:hover`, which *does* fire on an iPad trackpad. So today iPad gets the wedge wipe but not the tilt. That is arguably the better half to have, and it weakens the urgency of this item.
+- [ ] `enabled` is latched once at setup (`useTilt.ts:32`) — toggling OS Reduce Motion or plugging in a mouse needs a page reload. Fix with a `matchMedia` `change` listener (and tear it down on unmount).
 - [ ] `useTilt` has no `blur` / `visibilitychange` reset — Cmd-Tab mid-hover can leave a card frozen tilted, since `mouseleave` doesn't reliably fire.
-- [ ] Dead no-ops at `Item.vue:10`: `origin-center` (already the default) and `transform-gpu` (overwritten by `useTilt`'s inline transform the moment you hover; only applies at rest, where nothing moves).
-- [ ] `useTilt.ts:45` measures with `getBoundingClientRect()`, which returns the *post-transform* box — so pointer offsets normalize against a box that grows with `scale(1.02)` and the 3D rotation. ~2% distortion, invisible; `offsetWidth`/`offsetHeight` would make the math honest.
-- [ ] `Item.vue:91-96` and `:121-126` duplicate five declarations (`position`/`inset`/`overflow`/`border-radius`/`pointer-events`). A shared `.overlay` base would carry both.
+- [x] ~~Dead no-ops at `Item.vue:10`: `origin-center` and `transform-gpu`.~~ **Gone with the redesign 2026-07-26.** Both fell out when the card's class list was rewritten; neither was re-added.
+- [ ] `useTilt.ts:51` measures with `getBoundingClientRect()`, which returns the *post-transform* box — so pointer offsets normalize against a box that grows with `scale(1.02)` and the 3D rotation. ~2% distortion, invisible; `offsetWidth`/`offsetHeight` would make the math honest.
+- [ ] **Overlay duplication — bigger since the redesign.** There are now five absolutely-positioned overlays on the card (`.shade`, `.slab`, `.grain`, `.gloss`, `.rim`), each repeating `position`/`inset`/`border-radius: inherit`/`pointer-events`. A shared `.overlay` base would carry all five. Note `.slab` is *not* purely decorative chrome like the other four — it is the card's colour — so if the base class gets `pointer-events: none` by default, check that is still what `.slab` wants.
 - [ ] Header translate ladder (`Header.vue:11`) steps `base → md → lg → xl`, but the grid gains its third column at `2xl` (96rem) — above 1536px the banner geometry is frozen while the layout changes underneath it.
-- [ ] `drop-shadow-xl` (`Item.vue:23`) sits on the same element headlessui animates `rotate`/`scale` on, so a 9px-blur shadow is recomputed each frame for 500ms × 6 icons during the entrance.
+- [x] ~~`drop-shadow-xl` (`Item.vue:23`) sits on the same element headlessui animates `rotate`/`scale` on.~~ **Fixed by the redesign 2026-07-26.** The icon's wrapper div is gone; `.icon` carries a plain `box-shadow` instead of a `drop-shadow` filter, and a box-shadow is not recomputed by a composited transform.
 
 ---
 
@@ -137,14 +162,17 @@ The site currently does not state whose it is in any machine-readable way. Needs
 
 `yarn build` passes in ~3s with zero type errors (Node 22.23.1 via `.nvmrc`). CI's Node pin is correct — the workflow uses `node-version-file: .nvmrc`. `dist/` is properly gitignored. CNAME round-trips into `gh-pages`. 0 npm vulnerabilities.
 
-`useTilt` cancels its rAF and settle timer in `onBeforeUnmount`. `useAccentColor` is the strongest code in the repo — same-origin reasoning is correct (omitting `crossOrigin` is deliberate and right; setting it would fork the cache and double the download), tainted-canvas is caught in a try/catch, the async race is handled, failures degrade to an untinted card. Its `willReadFrequently` is Safari 18+ (above the site's 16.4 floor) but unknown context attributes are ignored per spec, so it's a silent no-op, not a break.
+`useTilt` cancels its rAF and settle timer in `onBeforeUnmount`. `useAccentColor` is the strongest code in the repo — same-origin reasoning is correct (omitting `crossOrigin` is deliberate and right; setting it would fork the cache and double the download), tainted-canvas is caught in a try/catch, the async race is handled, failures degrade to a card with no wedge at all (`v-if="accent"`), which is a clean fallback rather than a broken one. Its `willReadFrequently` is Safari 18+ (above the site's 16.4 floor) but unknown context attributes are ignored per spec, so it's a silent no-op, not a break.
 
-Tailwind v4 migration is clean — no config files, no `@tailwind` directives, no v3 leftovers; the v4 transform-property split broke nothing. Contrast passes AA at worst case (12.4:1 tint, 9.7:1 under gloss). No `any`, no non-null assertions, no listener leaks. headlessui transition nesting is correct. Touch users are not stranded. `target="_blank"` without `rel="noopener"` is safe at this site's browser floor (modern browsers imply it), though adding it is free.
+Tailwind v4 migration is clean — no config files, no `@tailwind` directives, no v3 leftovers; the v4 transform-property split broke nothing. No `any`, no non-null assertions, no listener leaks. headlessui transition nesting is correct. Touch users are not stranded. `target="_blank"` without `rel="noopener"` is safe at this site's browser floor (modern browsers imply it), though adding it is free.
+
+⚠️ **The old contrast line here — "passes AA at worst case (12.4:1 tint, 9.7:1 under gloss)" — was deleted, not carried forward.** It described the `.tint` wash, which no longer exists. Re-measured against the wedge and the six real icons 2026-07-26; the current numbers live in `Item.vue`'s geometry comment and are *not* uniformly AA. Do not quote the old figures.
 
 ## Hardware checks — all clear except iPad
 
 Everything on this list has been checked except the iPad item, which is gated on Hayden having the device to hand.
 
-- [x] ~~**Safari:** `.gloss` leaking transformed pseudo-elements past rounded corners.~~ **Checked by Hayden 2026-07-26 in Safari — renders fine. Don't re-raise.** The `overflow: hidden` + `border-radius: inherit` clip at `Item.vue:121-129` holds. iOS was never at risk: the gloss is hover-gated, so it never animates on touch and the leak can't manifest — macOS Safari was the entire test.
+- [x] ~~**Safari:** `.gloss` leaking transformed pseudo-elements past rounded corners.~~ **Checked by Hayden 2026-07-26 in Safari — renders fine. Don't re-raise.** The `overflow: hidden` + `border-radius: inherit` clip on `.gloss` holds, and it survived the redesign unchanged. iOS was never at risk: the gloss is hover-gated, so it never animates on touch and the leak can't manifest — macOS Safari was the entire test.
+- [ ] **Safari, new since the redesign:** the card itself no longer sets `overflow`. `.slab` rounds its own corners with `border-radius: inherit` alone, on the reasoning that a background paints to the border box. That is correct per spec, but it is a *different* mechanism from the clip that was tested above, on the one element that paints edge-to-edge colour — so the corner where the wedge meets the card's radius is worth one look in Safari. Not suspected, just untested.
 - ~~**375px viewport:** the icon shave (Phase 1) and the Euclidean description clip (Phase 3)~~ — both checked 2026-07-26, both fine. Nothing further needed at this width.
 - **iPad + Magic Keyboard:** confirm the tilt gate before changing it (Phase 6).

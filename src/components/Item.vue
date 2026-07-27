@@ -6,57 +6,56 @@
   >
     <!-- The face is a hair off white on purpose. A white specular highlight over
          #fff composites back to #fff — no headroom, no effect. Dropping to
-         #fafbfc gives the light somewhere to climb while still reading as a
+         #fbfbfc gives the light somewhere to climb while still reading as a
          white card against the page's gray-100. -->
     <a :href="item.link || undefined"
        ref="card"
-       class="relative flex bg-[#fafbfc] px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+       class="card relative block h-36 sm:h-40 rounded-2xl bg-[#fbfbfc] hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
        target="_blank"
        @mouseenter="onMouseEnter"
        @mousemove="onMouseMove"
        @mouseleave="onMouseLeave"
     >
       <div class="shade"></div>
-      <div v-if="accent" class="tint" :style="{ '--card-accent': accent }"></div>
-      <div class="grain"></div>
-      <div class="gloss"></div>
-      <div class="rim"></div>
+      <div v-if="accent" class="slab" :style="{ '--card-accent': accent }"></div>
       <TransitionChild as="template"
                        enter="transition duration-500 ease-out"
                        enter-from="rotate-45 scale-70 opacity-0"
                        enter-to="rotate-0 scale-100 opacity-100"
       >
-        <div class="absolute w-24 sm:w-44 top-4 sm:-top-6 -left-5 sm:-left-9 rounded-full drop-shadow-xl">
-          <!-- Decorative: the adjacent <h2> already names the project. The
-               intrinsic size is stated so the box is reserved before decode;
-               h-auto keeps the height attribute from fighting w-full. -->
-          <img class="w-full h-auto rounded-full" :src="imageSrc" alt="" width="512" height="512" />
-          <div class="gloss"></div>
-        </div>
+        <!-- Decorative: the adjacent <h2> already names the project. The
+             intrinsic size is stated so the box is reserved before decode. -->
+        <img class="icon" :src="imageSrc" alt="" width="512" height="512" />
       </TransitionChild>
-      <div class="ml-16 sm:ml-32 h-full grow flex flex-col">
+      <div class="body">
         <TransitionChild as="template"
                          enter="transition duration-500 ease-out"
                          enter-from="translate-x-12 opacity-0"
                          enter-to="translate-x-0 opacity-100"
         >
-          <h2 class="font-calistoga text-lg sm:text-2xl mb-1">{{ item.name }}</h2>
+          <h2 class="font-calistoga text-lg sm:text-xl leading-tight line-clamp-2">{{ item.name }}</h2>
         </TransitionChild>
-        <div class="text-sm sm:text-base pl-2 h-full min-h-0 border-l-4 border-gray-300">
-          <TransitionChild as="template"
-                           enter="transition duration-500 ease-out"
-                           enter-from="translate-x-12 opacity-0"
-                           enter-to="translate-x-0 opacity-100"
-          >
-            <div class="h-full overflow-hidden whitespace-pre-wrap">{{ item.description }}</div>
-          </TransitionChild>
+        <TransitionChild as="template"
+                         enter="transition duration-500 ease-out"
+                         enter-from="translate-x-12 opacity-0"
+                         enter-to="translate-x-0 opacity-100"
+        >
+          <p class="desc text-xs sm:text-[13px] leading-snug text-gray-600">{{ item.description }}</p>
+        </TransitionChild>
+        <div class="meta font-mono text-[10px] uppercase tracking-wider text-gray-400">
+          <span v-if="item.kind">{{ item.kind }}</span>
+          <span v-else></span>
+          <span v-if="item.link" class="go">
+            {{ goLabel }}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M7 17 17 7M9 7h8v8" />
+            </svg>
+          </span>
         </div>
       </div>
-      <div v-if="item.link" class="flex items-end">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-      </div>
+      <div class="grain"></div>
+      <div class="gloss"></div>
+      <div class="rim"></div>
     </a>
   </TransitionRoot>
 </template>
@@ -82,9 +81,19 @@ export default defineComponent({
   },
   setup(props) {
     const imageSrc = computed(() => `/assets/${props.item.image}`);
+
+    // Named for where the link goes, not for what it is: the one card that
+    // stays on the site reads "Open" rather than claiming a repo.
+    const goLabel = computed(() => {
+      const link = props.item.link;
+      if (!link.startsWith("http")) return "Open";
+      return new URL(link).hostname.endsWith("github.com") ? "GitHub" : "Open";
+    });
+
     return {
       ...useTilt(),
       imageSrc,
+      goLabel,
       accent: useAccentColor(imageSrc),
     };
   }
@@ -93,32 +102,285 @@ export default defineComponent({
 
 <style scoped>
 /*
- * Card tint: a wash in the icon's own accent colour, sampled off the image by
- * useAccentColor() and handed down as --card-accent. It pools at the top-left
- * corner, where the icon sits, and clears well before the description text.
+ * Card geometry. --wedge is the width of the accent wedge at the card's top
+ * edge; --gutter is where the text column starts.
+ *
+ * --gutter is NOT --wedge plus a margin, which is the intuitive reading and is
+ * what left a 35px hole between the icon and the text. No text begins at the top
+ * of the card: the first line of the title starts --body's 15px of padding down,
+ * and the edge has already walked 15px left by then. So the rule is
+ *
+ *     --gutter  =  resting --wedge  -  15  +  clearance
+ *
+ * with clearance at 8px. Note *resting*: the gutter is not sized to clear the
+ * hover width. It was, and that cost the whole hover advance — 52px of text
+ * column on every card in both states, 58 on desktop — to buy room for a state
+ * only one card is ever in. The wedge now runs past the text on hover and slides
+ * underneath it instead, the text being a z-index above the slab.
+ *
+ * What that costs, measured against the six current icons rather than assumed
+ * from the lightness band: the title is black and lands between 6.8:1 (midi2smw,
+ * the darkest accent) and 13.6:1, so it is fine wherever the edge crosses it.
+ * The description is text-gray-600 and the edge reaches ~20px into its first
+ * line at full hover, where the same six run 2.4:1 to 4.9:1 — the low end is
+ * under AA. Accepted on the eyeball for a few characters of a transient,
+ * hover-only state (Hayden, 2026-07-26). Re-measure if the advance grows, if the
+ * gutter shrinks, or if the description ever gets lighter text.
+ *
+ * The advance is large on purpose. A small one puts the edge a character or two
+ * into the title and stops, which reads as a collision; a large one crosses
+ * behind the first line or two outright, which reads as the colour sweeping. The
+ * failure mode here is being timid, not being bold.
+ *
+ * The icon deliberately breaks the diagonal. Its centre sits at
+ * (--icon-left + r, --icon-top + r), and the edge runs x + y = --wedge, so the
+ * circle stands proud of the colour by r - (--wedge - centre.x - centre.y)/√2.
+ * At rest that is ~28px on desktop. Sizing --wedge so the circle and the edge
+ * land within a pixel or two of each other is the one thing to avoid — that
+ * reads as a clipping bug, which is exactly what it looked like before these
+ * numbers came down.
+ *
+ * Note --icon pushes the hang-off twice: a wider circle reaches further past the
+ * edge, and its centre also moves down-right, which is toward the edge. Growing
+ * the icon without moving --wedge is therefore the cheap way to have it break
+ * the diagonal harder.
+ *
+ * --wedge also wants to stay close to the card's height, because the edge walks
+ * left 1px per 1px down and so runs out at y = --wedge. Anything below that is
+ * card with no diagonal in it. Desktop sits at 152 against a 160px card, which
+ * leaves 8px; the phone card is h-36 rather than h-40 for the same reason, since
+ * a wedge sized to protect a 311px-wide text column cannot also reach the bottom
+ * of a 160px card.
+ *
+ * Hover advances the wedge 52px (58 on desktop), far enough that the edge is
+ * well past the title's first line rather than clipping the end of it. The icon
+ * is fully covered at that point, so it goes from breaking the diagonal at rest
+ * to sitting inside the colour — which is the whole gesture.
  */
-.tint {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-      radial-gradient(120% 125% at 6% 0%,
-          color-mix(in srgb, var(--card-accent) 45%, transparent) 0%,
-          color-mix(in srgb, var(--card-accent) 18%, transparent) 45%,
-          transparent 78%),
-      linear-gradient(135deg,
-          color-mix(in srgb, var(--card-accent) 12%, transparent) 0%,
-          transparent 70%);
-  /* Sampling finishes a beat after the card lands, so ease it in rather than
-   * letting the colour pop on. */
-  animation: tint-in 450ms ease-out both;
+.card {
+  --wedge: 132px;
+  --gutter: 125px;
+  --icon: 74px;
+  --icon-top: 14px;
+  --icon-left: 13px;
+  box-shadow: 0 1px 0 rgb(15 23 42 / 0.05);
+  /*
+   * Deliberately flat, and deliberately not clipping either.
+   *
+   * The icon and the text were briefly lifted onto their own planes with
+   * preserve-3d, which parallaxed them against the wedge. It was reverted: in a
+   * 3D context paint order is by depth rather than z-index, so anything on a
+   * raised plane comes out in front of .gloss and .grain and takes itself out of
+   * the lighting. Putting the overlays higher still does not work — a layer at a
+   * different Z parallaxes against the card face and slides off its edges under
+   * rotation. One light over one surface means one plane.
+   *
+   * The card still does not set overflow, though. That was only ever there to
+   * round the wedge's corners, which .slab now does itself with border-radius,
+   * and .shade needs to paint an outer shadow that a clip would eat.
+   */
+  /* --wedge animates here rather than on .slab: it is set here, so the slab
+   * simply inherits a value that is already moving. Transitioning it on the
+   * child would work, but only by way of the child re-interpolating a value its
+   * parent had already snapped.
+   *
+   * The transform duration comes from useTilt via --tilt-transition. It has to
+   * be part of this list rather than an inline style, or it would replace the
+   * list outright and the wipe would stop easing — which is the whole reason
+   * useTilt publishes a duration instead of writing style.transition itself.
+   *
+   * Nothing else on the card is worth listing here. The resting box-shadow never
+   * changes (the hover depth is .shade's opacity, and focus-visible is an
+   * outline), so an entry for it would only ever be dead weight. */
+  transition:
+      transform var(--tilt-transition, 0s) ease-out,
+      --wedge 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes tint-in {
+.card:hover {
+  --wedge: 184px;
+}
+
+/*
+ * The depth the card picks up on hover: a soft halo over the resting hairline,
+ * its opacity driven by --gloss-strength, so it answers to where the pointer is
+ * rather than switching on at the card's edge. That continuity is most of what
+ * makes the tilt read as a tilt.
+ *
+ * It has to be its own layer rather than a box-shadow on .card, because
+ * --gloss-strength changes every frame and transitioning a box-shadow repaints;
+ * transitioning opacity on a childless overlay composites. Outer shadows are
+ * clipped to outside their own border-box, so this inset-0 transparent layer
+ * paints nothing over the card itself.
+ */
+.shade {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 12px 34px -14px rgb(15 23 42 / 0.5);
+  opacity: var(--gloss-strength, 0);
+  transition: opacity 250ms ease-out;
+}
+
+/* Matches Tailwind v4's sm breakpoint. Below it the card is 311px at a 375px
+ * viewport — main's px-6 and the inner div's px-2 take 32px a side — so the
+ * 125px gutter leaves 172px of text. A gutter sized to clear the hover wedge
+ * instead (177px) would leave 120px, which is the trade the base rule declines.
+ * Both rules have to sit after the base :hover above, or the narrow hover value
+ * would win at every width. */
+@media (width >= 40rem) {
+  .card {
+    --wedge: 152px;
+    --gutter: 145px;
+    --icon: 92px;
+    --icon-top: 18px;
+    --icon-left: 16px;
+  }
+
+  .card:hover { --wedge: 210px; }
+}
+
+/*
+ * The wedge: the header's 45° red slab, brought down into the grid in each
+ * card's own sampled accent.
+ *
+ * 135deg is a true 45° edge running "/", the same direction as the header. The
+ * stop is a *perpendicular* distance, so a stop at d puts the edge at d*sqrt(2)
+ * along the top edge — hence the 1/sqrt(2). From there the edge walks left 1px
+ * for every 1px down, which is what makes --wedge a plain width in px rather
+ * than something that changes shape with the card.
+ *
+ * Two stops of the same accent then a hard cut at the second one: the pair is
+ * what holds the field flat all the way to the edge, and the repeated position
+ * is what keeps the cut a line rather than a ramp.
+ */
+.slab {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* Sampling finishes a beat after the card lands — later still on a cold load —
+   * so ease the colour in rather than letting it pop on at full strength. This
+   * is mount-time only; the hover wipe is --wedge on .card. */
+  animation: wedge-in 450ms ease-out both;
+  /* The card no longer clips its children, so the wedge rounds its own corners.
+   * A background is painted to the border box, so the radius alone is enough —
+   * no overflow needed. */
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+      /* Flat, not graduated. The wedge is now a light field, so any lift toward
+       * white lands hardest right at the cut — exactly where the edge has to
+       * hold against the card face — and softens the one line carrying the
+       * shape. It is also the colour useAccentColor measured its contrast at, so
+       * keeping it flat means the measurement describes what ships. Depth comes
+       * from .gloss and .grain, which have a whole surface to play over. */
+      var(--card-accent) 0,
+      var(--card-accent) calc(var(--wedge) * 0.70711),
+      transparent calc(var(--wedge) * 0.70711));
+}
+
+@keyframes wedge-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.icon {
+  position: absolute;
+  top: var(--icon-top);
+  left: var(--icon-left);
+  z-index: 1;
+  width: var(--icon);
+  height: var(--icon);
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.26);
+}
+
+/*
+ * The icon deliberately does not move on hover. It had a 4px nudge, which
+ * couldn't ease in both directions without a base transition on this element —
+ * and a base transition here fights headlessui, which drives this same element's
+ * transform and opacity during the entrance. The wedge already carries the
+ * hover; the icon staying put is what the wedge slides against.
+ */
+
+/*
+ * useTilt already refuses to run under Reduce Motion, but the wedge wipe and the
+ * shadow are pure CSS and would keep moving without this. The hover state still
+ * changes — it just arrives rather than travels.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .go {
+    transition: none;
+  }
+}
+
+/*
+ * Above the slab so the wedge can never paint over the text, below the gloss so
+ * the light still passes across it.
+ */
+.body {
+  position: relative;
+  z-index: 1;
+  margin-left: var(--gutter);
+  /* The 15px top is load-bearing — --gutter is derived from it, see above. The
+   * bottom and the gaps are not, and every pixel trimmed here is spare between
+   * the last line of the description and the fade band below it. */
+  padding: 15px 14px 11px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/*
+ * Fades into the clip instead of guillotining a line mid-stroke, so a
+ * description longer than the card degrades rather than looking broken.
+ *
+ * A shape-outside float was tried here, letting the description wrap along the
+ * diagonal and reclaim ~30 characters a card. It was reverted: the title cannot
+ * follow it — the title sits where the wedge is widest, and matching the
+ * description's clearance would push it right, not left — so the block ended up
+ * with three different left edges. One straight column beats a ragged one, even
+ * a ragged one that fits more words. --gutter is that column, for all three.
+ */
+.desc {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  /*
+   * A 6px band, not a percentage. At 74% the fade began 61px into an 83px box —
+   * precisely where the fourth line starts — so a description that fitted in
+   * full was washed out across a whole line for no reason. The band has to be
+   * shorter than one line for the fade to mean "there is more below this" rather
+   * than "this line is the last one". leading-snug above is part of the same
+   * fix: it puts four lines inside the box with room to spare, so the band lands
+   * in the gap under them instead of over them.
+   */
+  mask-image: linear-gradient(#000 calc(100% - 6px), transparent 100%);
+}
+
+.meta {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  /* Literal rather than var(--color-gray-500): v4 prunes theme variables that
+   * no utility references, and nothing else in the app asks for these two. */
+  color: rgb(107 114 128);
+  transition: transform 220ms ease-out, color 220ms ease-out;
+}
+
+.card:hover .go {
+  transform: translateX(3px);
+  color: rgb(17 24 39);
 }
 
 /*
@@ -127,7 +389,7 @@ export default defineComponent({
  * same physical size on a Retina panel as on a 1x one.
  *
  * multiply, not plain alpha: paper doesn't emit light, it only ever subtracts,
- * and multiplying preserves the accent tint's hue where a neutral grey overlay
+ * and multiplying preserves the accent wedge's hue where a neutral grey overlay
  * would wash it out.
  *
  * The mask is the whole point. Its centre tracks +tilt — the same side
@@ -146,6 +408,7 @@ export default defineComponent({
   --grain-strength: 0.18;
   position: absolute;
   inset: 0;
+  z-index: 2;
   border-radius: inherit;
   pointer-events: none;
   opacity: var(--grain-strength);
@@ -161,12 +424,12 @@ export default defineComponent({
 /*
  * A glossy surface: a broad specular highlight riding opposite the pointer and
  * a matching falloff behind it. Both are placed from --tilt-x/--tilt-y, which
- * useTilt() sets on the card and every gloss inherits, so the icon picks up the
- * same light as the card it sits on. Clips to whatever it is dropped into.
+ * useTilt() sets on the card.
  */
 .gloss {
   position: absolute;
   inset: 0;
+  z-index: 2;
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
@@ -181,11 +444,18 @@ export default defineComponent({
   inset: -50%;
 }
 
-/* Specular highlight — reads on the icon; a no-op on the white card face. */
+/*
+ * Specular highlight — reads on the wedge; a no-op on the white card face.
+ *
+ * Dialled back from 0.45 once the wedge arrived. The original number was tuned
+ * against a card that was white nearly edge to edge, where white-on-white had
+ * almost nowhere to go; over a saturated field the same alpha has the full range
+ * to work in and stops reading as light on a surface.
+ */
 .gloss::before {
   background: radial-gradient(circle farthest-side,
-      rgb(255 255 255 / 0.45),
-      rgb(255 255 255 / 0.08) 45%,
+      rgb(255 255 255 / 0.24),
+      rgb(255 255 255 / 0.04) 45%,
       rgb(255 255 255 / 0) 75%);
   transform: translate(calc(var(--tilt-x, 0) * -18%), calc(var(--tilt-y, 0) * -18%));
 }
@@ -193,12 +463,12 @@ export default defineComponent({
 /*
  * Falloff over the receding half, wide enough to shade rather than spot. This
  * is the half of the gloss that actually reads on the card face: white can only
- * add ~5 levels over #fafbfc, whereas darkening has the full range to work in.
+ * add ~5 levels over #fbfbfc, whereas darkening has the full range to work in.
  */
 .gloss::after {
   background: radial-gradient(circle farthest-side,
-      rgb(15 23 42 / 0.13),
-      rgb(15 23 42 / 0.05) 55%,
+      rgb(15 23 42 / 0.12),
+      rgb(15 23 42 / 0.04) 55%,
       rgb(15 23 42 / 0) 88%);
   transform: translate(calc(var(--tilt-x, 0) * 26%), calc(var(--tilt-y, 0) * 26%));
 }
@@ -216,11 +486,14 @@ export default defineComponent({
 .rim {
   position: absolute;
   inset: 0;
+  z-index: 2;
   border-radius: inherit;
   pointer-events: none;
   box-shadow:
-      /* Always on, including touch: defines the card against the page. */
-      inset 0 0 0 1px rgb(15 23 42 / 0.04),
+      /* Always on, including touch: defines the card against the page, and is
+       * the only thing holding the white half of the face off the background
+       * now that the resting drop shadow is a hairline. */
+      inset 0 0 0 1px rgb(15 23 42 / 0.08),
       /* Blur well past the offset so both arcs feather into the face. At 1px of
        * blur the lit side was a crisp white stripe against the page, which read
        * as a seam between the card and its shadow rather than a lit edge. */
@@ -228,30 +501,5 @@ export default defineComponent({
         rgb(255 255 255 / calc(var(--gloss-strength, 0) * 0.7)),
       inset calc(var(--tilt-x, 0) * 2px) calc(var(--tilt-y, 0) * 2px) 4px -1px
         rgb(15 23 42 / calc(var(--gloss-strength, 0) * 0.14));
-}
-
-/*
- * The depth the card picks up on hover: a soft halo fading in over the resting
- * shadow-md. Contrast against the page rather than against the card face, so it
- * lands at any amplitude.
- *
- * Deliberately not offset or translated. A tilt-driven swing was tried and read
- * as a second rounded rectangle sliding out from under the static shadow-md —
- * two shadows at different offsets look like a detached ghost, not one deeper
- * shadow, and 4° of tilt doesn't move a real cast shadow anyway. The direction
- * of the light is already carried by .rim and .gloss::after. Wide blur with a
- * large negative spread keeps this a gradient, never an edge.
- *
- * Outer shadows are clipped to outside their own border-box, so this inset-0
- * transparent layer paints nothing over the card itself.
- */
-.shade {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow: 0 10px 34px -12px rgb(15 23 42 / 0.18);
-  opacity: var(--gloss-strength, 0);
-  transition: opacity 250ms ease-out;
 }
 </style>

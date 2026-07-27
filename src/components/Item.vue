@@ -4,16 +4,22 @@
                   enter-from="translate-x-4 opacity-0"
                   enter-to="translate-x-0 opacity-100"
   >
+    <!-- The face is a hair off white on purpose. A white specular highlight over
+         #fff composites back to #fff — no headroom, no effect. Dropping to
+         #fafbfc gives the light somewhere to climb while still reading as a
+         white card against the page's gray-100. -->
     <a :href="item.link || undefined"
        ref="card"
-       class="relative flex bg-white px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+       class="relative flex bg-[#fafbfc] px-4 py-2 rounded-2xl h-40 shadow-md origin-center transform-gpu hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
        target="_blank"
        @mouseenter="onMouseEnter"
        @mousemove="onMouseMove"
        @mouseleave="onMouseLeave"
     >
+      <div class="shade"></div>
       <div v-if="accent" class="tint" :style="{ '--card-accent': accent }"></div>
       <div class="gloss"></div>
+      <div class="rim"></div>
       <TransitionChild as="template"
                        enter="transition duration-500 ease-out"
                        enter-from="rotate-45 scale-70 opacity-0"
@@ -135,7 +141,6 @@ export default defineComponent({
   content: "";
   position: absolute;
   inset: -50%;
-  will-change: transform;
 }
 
 /* Specular highlight — reads on the icon; a no-op on the white card face. */
@@ -147,12 +152,68 @@ export default defineComponent({
   transform: translate(calc(var(--tilt-x, 0) * -18%), calc(var(--tilt-y, 0) * -18%));
 }
 
-/* Falloff over the receding half, wide enough to shade rather than spot. */
+/*
+ * Falloff over the receding half, wide enough to shade rather than spot. This
+ * is the half of the gloss that actually reads on the card face: white can only
+ * add ~5 levels over #fafbfc, whereas darkening has the full range to work in.
+ */
 .gloss::after {
   background: radial-gradient(circle farthest-side,
-      rgb(15 23 42 / 0.06),
-      rgb(15 23 42 / 0.02) 55%,
-      rgb(15 23 42 / 0) 85%);
+      rgb(15 23 42 / 0.13),
+      rgb(15 23 42 / 0.05) 55%,
+      rgb(15 23 42 / 0) 88%);
   transform: translate(calc(var(--tilt-x, 0) * 26%), calc(var(--tilt-y, 0) * 26%));
+}
+
+/*
+ * Edge light. The card face has almost no room for a white highlight, but its
+ * border sits against the darker page, so a lit hairline there is the one place
+ * white-on-white becomes legible. The lit arc rides opposite the pointer and
+ * the shaded arc trails it, matching the light .gloss uses.
+ *
+ * The offsets are box-shadow lengths, so this repaints per frame rather than
+ * compositing — which is why it lives on its own childless overlay instead of
+ * on the card, where it would re-rasterise the icon and text every move.
+ */
+.rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+      /* Always on, including touch: defines the card against the page. */
+      inset 0 0 0 1px rgb(15 23 42 / 0.04),
+      /* Blur well past the offset so both arcs feather into the face. At 1px of
+       * blur the lit side was a crisp white stripe against the page, which read
+       * as a seam between the card and its shadow rather than a lit edge. */
+      inset calc(var(--tilt-x, 0) * -2px) calc(var(--tilt-y, 0) * -2px) 4px -1px
+        rgb(255 255 255 / calc(var(--gloss-strength, 0) * 0.7)),
+      inset calc(var(--tilt-x, 0) * 2px) calc(var(--tilt-y, 0) * 2px) 4px -1px
+        rgb(15 23 42 / calc(var(--gloss-strength, 0) * 0.14));
+}
+
+/*
+ * The depth the card picks up on hover: a soft halo fading in over the resting
+ * shadow-md. Contrast against the page rather than against the card face, so it
+ * lands at any amplitude.
+ *
+ * Deliberately not offset or translated. A tilt-driven swing was tried and read
+ * as a second rounded rectangle sliding out from under the static shadow-md —
+ * two shadows at different offsets look like a detached ghost, not one deeper
+ * shadow, and 4° of tilt doesn't move a real cast shadow anyway. The direction
+ * of the light is already carried by .rim and .gloss::after. Wide blur with a
+ * large negative spread keeps this a gradient, never an edge.
+ *
+ * Outer shadows are clipped to outside their own border-box, so this inset-0
+ * transparent layer paints nothing over the card itself.
+ */
+.shade {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 10px 34px -12px rgb(15 23 42 / 0.18);
+  opacity: var(--gloss-strength, 0);
+  transition: opacity 250ms ease-out;
 }
 </style>

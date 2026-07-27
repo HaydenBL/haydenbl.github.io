@@ -48,7 +48,8 @@ Highest impact per unit of risk. No behaviour change; verified by `yarn build` p
 - [x] **No `color-scheme` declared.** Chrome's Auto Dark Theme on Android targets pages that don't opt out, and its inversion mangles the `.tint`/`.gloss` overlays that paint on top of text. Light-only is a fine choice; it just needs stating: `:root { color-scheme: light; }` in `src/index.css`.
 - [x] Removed `<meta name="keywords">` (ignored by Google since 2009).
 - [ ] **Deferred to Phase 4:** `mask-icon` and `msapplication-TileColor` in `index.html`, since removing those tags orphans `public/safari-pinned-tab.svg` and `public/browserconfig.xml` — cleaner to drop tags and files together in the dead-asset sweep.
-- [ ] **Not done, out of scope:** `theme-color` is `#ffffff` while the body is `bg-gray-100` (`#f3f4f6`), a faint seam on iOS 15–18.7. Safari 26 ignores `theme-color` entirely and derives the tint from the page, so it looks right there. One-word fix if you want it.
+- [x] ~~`theme-color` is `#ffffff` while the body is `bg-gray-100` (`#f3f4f6`), a faint seam on iOS 15–18.7.~~ **Done 2026-07-26.** `theme-color` and the manifest's `theme_color` are now `#f3f4f6`. Safari 26 ignores `theme-color` and samples `<body>`'s background instead, so it lands on the same gray there by default — nothing to do for it.
+  - **Red chrome was tried and rejected (Hayden, 2026-07-26). Don't re-raise.** Matching the header's red-500 works via `theme-color` on iOS 15–18.7 and Chrome/Android, but Safari 26 only samples fixed/sticky elements at the viewport edge — and the header is `absolute`, so the only way to feed it red is a dedicated fixed sliver. That's a hack for a browser that's deliberately deriving the tint from the page; not worth it.
 
 ## Phase 2 — type safety (do before Phase 3)
 

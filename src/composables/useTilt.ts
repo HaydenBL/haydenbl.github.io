@@ -1,4 +1,5 @@
 import { onBeforeUnmount, ref } from "vue";
+import { prefersReducedMotion } from "./useReducedMotion";
 
 // Tuning knobs for the hover tilt. Tweak these first if the effect feels off.
 // The gloss itself is styled in Item.vue, driven by the custom properties below.
@@ -10,8 +11,7 @@ const RETURN_MS = 300;
 
 function tiltIsWanted(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
-  return window.matchMedia("(hover: hover)").matches
-      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return window.matchMedia("(hover: hover)").matches && !prefersReducedMotion();
 }
 
 /**

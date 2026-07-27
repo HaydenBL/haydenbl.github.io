@@ -1,63 +1,81 @@
 <template>
-  <TransitionRoot :show="!!item.show"
-                  enter="transition duration-300 ease-out"
-                  enter-from="translate-x-4 opacity-0"
-                  enter-to="translate-x-0 opacity-100"
-  >
-    <!-- The face is a hair off white on purpose. A white specular highlight over
-         #fff composites back to #fff — no headroom, no effect. Dropping to
-         #fbfbfc gives the light somewhere to climb while still reading as a
-         white card against the page's gray-100. -->
-    <a :href="item.link || undefined"
-       ref="card"
-       class="card relative block h-36 sm:h-40 rounded-2xl bg-[#fbfbfc] hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-       target="_blank"
-       @mouseenter="onMouseEnter"
-       @mousemove="onMouseMove"
-       @mouseleave="onMouseLeave"
+  <!--
+    The card's box, held from the first paint. It carries the height that used to
+    be on the card itself, for two reasons: an IntersectionObserver needs a box
+    to observe, and a hidden TransitionRoot renders nothing at all — so without
+    this there would be no element in the grid to ask about. Reserving it also
+    stops the grid growing a row at a time as the entrance runs, which is what it
+    did while the stagger was a timer ladder in App.vue.
+  -->
+  <div ref="slot" class="h-36 sm:h-40">
+    <TransitionRoot :show="revealed"
+                    class="h-full"
+                    enter="transition duration-300 ease-out"
+                    :enter-from="cardEnterFrom"
+                    enter-to="translate-x-0 translate-y-0 opacity-100"
     >
-      <div class="shade"></div>
-      <div v-if="accent" class="slab" :style="{ '--card-accent': accent }"></div>
-      <!-- Decorative: the adjacent <h2> already names the project. The
-           intrinsic size is stated so the box is reserved before decode. -->
-      <TransitionChild as="template"
-                       enter="transition duration-500 ease-out"
-                       enter-from="rotate-45 scale-70 opacity-0"
-                       enter-to="rotate-0 scale-100 opacity-100"
+      <!-- The face is a hair off white on purpose. A white specular highlight over
+           #fff composites back to #fff — no headroom, no effect. Dropping to
+           #fbfbfc gives the light somewhere to climb while still reading as a
+           white card against the page's gray-100. -->
+      <a :href="item.link || undefined"
+         ref="card"
+         class="card relative block h-full rounded-2xl bg-[#fbfbfc] hover:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+         target="_blank"
+         @mouseenter="onMouseEnter"
+         @mousemove="onMouseMove"
+         @mouseleave="onMouseLeave"
       >
-        <img class="icon" :src="imageSrc" alt="" width="512" height="512" />
-      </TransitionChild>
-      <div class="body">
+        <div class="shade"></div>
+        <div v-if="accent" class="slab" :style="{ '--card-accent': accent }"></div>
+        <!-- Decorative: the adjacent <h2> already names the project. The
+             intrinsic size is stated so the box is reserved before decode. -->
         <TransitionChild as="template"
                          enter="transition duration-500 ease-out"
-                         enter-from="translate-x-12 opacity-0"
-                         enter-to="translate-x-0 opacity-100"
+                         :enter-from="iconEnterFrom"
+                         enter-to="rotate-0 scale-100 opacity-100"
         >
-          <h2 class="font-calistoga text-lg sm:text-xl leading-tight line-clamp-2">{{ item.name }}</h2>
+          <img class="icon" :src="imageSrc" alt="" width="512" height="512" />
         </TransitionChild>
-        <TransitionChild as="template"
-                         enter="transition duration-500 ease-out"
-                         enter-from="translate-x-12 opacity-0"
-                         enter-to="translate-x-0 opacity-100"
-        >
-          <p class="desc text-xs sm:text-[13px] leading-snug text-gray-600">{{ item.description }}</p>
-        </TransitionChild>
-        <div class="meta font-mono text-[10px] uppercase tracking-wider text-gray-400">
-          <span v-if="item.kind">{{ item.kind }}</span>
-          <span v-else></span>
-          <span v-if="item.link" class="go">
-            {{ goLabel }}
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </span>
+        <div class="body">
+          <TransitionChild as="template"
+                           enter="transition duration-500 ease-out"
+                           :enter-from="textEnterFrom"
+                           enter-to="translate-x-0 translate-y-0 opacity-100"
+          >
+            <h2 class="font-calistoga text-lg sm:text-xl leading-tight line-clamp-2">{{ item.name }}</h2>
+          </TransitionChild>
+          <TransitionChild as="template"
+                           enter="transition duration-500 ease-out"
+                           :enter-from="textEnterFrom"
+                           enter-to="translate-x-0 translate-y-0 opacity-100"
+          >
+            <p class="desc text-xs sm:text-[13px] leading-snug text-gray-600">{{ item.description }}</p>
+          </TransitionChild>
+          <div class="meta font-mono text-[10px] uppercase tracking-wider text-gray-400">
+            <!-- The accent otherwise never leaves the top-left corner. The dot is
+                 the one place it reaches the text column, and being decorative it
+                 owes no contrast — which the wedge's lightness band could not
+                 promise it anyway. -->
+            <span v-if="item.kind" class="kind">
+              <span v-if="accent" class="dot" :style="{ '--card-accent': accent }"></span>
+              {{ item.kind }}
+            </span>
+            <span v-else></span>
+            <span v-if="item.link" class="go">
+              {{ goLabel }}
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M7 17 17 7M9 7h8v8" />
+              </svg>
+            </span>
+          </div>
         </div>
-      </div>
-      <div class="grain"></div>
-      <div class="gloss"></div>
-      <div class="rim"></div>
-    </a>
-  </TransitionRoot>
+        <div class="grain"></div>
+        <div class="gloss"></div>
+        <div class="rim"></div>
+      </a>
+    </TransitionRoot>
+  </div>
 </template>
 
 <script lang="ts">
@@ -66,6 +84,8 @@ import { TransitionRoot, TransitionChild } from "@headlessui/vue";
 import {computed, defineComponent, PropType} from "vue";
 import { useTilt } from "../composables/useTilt";
 import { useAccentColor } from "../composables/useAccentColor";
+import { useReveal } from "../composables/useReveal";
+import { prefersReducedMotion } from "../composables/useReducedMotion";
 
 export default defineComponent({
   name: "Item",
@@ -90,11 +110,36 @@ export default defineComponent({
       return new URL(link).hostname.endsWith("github.com") ? "GitHub" : "Open";
     });
 
+    /*
+     * The entrance travels along the site's 45° axis rather than straight across
+     * it, so it belongs to the same composition as the banner — and it borrows
+     * the banner's structure too: there, the wordmark row and the icon row slide
+     * in along that axis in *opposite* directions. Same here. The card arrives
+     * from below-left, travelling up and right like the wordmark; its text
+     * arrives from above-right, travelling down and left like the icons.
+     *
+     * The directions are not interchangeable. Text coming from below-left would
+     * cross the icon and the wedge on its way in — the body paints above both —
+     * and the one thing this card has been careful about is never drawing text
+     * over the accent. From above-right it only ever crosses the card's own top
+     * edge, which is where the entrance already spent its overflow when this was
+     * a flat translate-x.
+     *
+     * Under Reduce Motion all three collapse to a plain fade. Opacity is not a
+     * vestibular trigger, so the entrance still reads — it arrives rather than
+     * travels, the same bargain the hover state already makes in CSS below.
+     */
+    const still = prefersReducedMotion();
+
     return {
       ...useTilt(),
+      ...useReveal(),
       imageSrc,
       goLabel,
       accent: useAccentColor(imageSrc),
+      cardEnterFrom: still ? "opacity-0" : "-translate-x-3 translate-y-3 opacity-0",
+      textEnterFrom: still ? "opacity-0" : "translate-x-8 -translate-y-8 opacity-0",
+      iconEnterFrom: still ? "opacity-0" : "rotate-45 scale-70 opacity-0",
     };
   }
 })
@@ -198,11 +243,17 @@ export default defineComponent({
    * list outright and the wipe would stop easing — which is the whole reason
    * useTilt publishes a duration instead of writing style.transition itself.
    *
+   * The fallback is for the press state at the bottom of this file, and only
+   * ever for it. useTilt writes --tilt-transition on mouseenter and never clears
+   * it, so on a pointer device the fallback applies solely before the first
+   * hover — when nothing is moving the transform anyway. On touch the variable
+   * is never written at all, and 0s there would have made the press snap.
+   *
    * Nothing else on the card is worth listing here. The resting box-shadow never
    * changes (the hover depth is .shade's opacity, and focus-visible is an
    * outline), so an entry for it would only ever be dead weight. */
   transition:
-      transform var(--tilt-transition, 0s) ease-out,
+      transform var(--tilt-transition, 120ms) ease-out,
       --wedge 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -314,6 +365,27 @@ export default defineComponent({
  */
 
 /*
+ * The press. Touch gets no tilt (useTilt gates on hover), no gloss and no rim
+ * light (both key off --gloss-strength, which nothing ever raises there), so
+ * until now a phone got the entrance and then a completely inert card. This is
+ * the one piece of feedback the surface can give back to a finger.
+ *
+ * Gated to hover:none rather than left global because on a pointer device
+ * useTilt owns the inline transform, which outranks this rule for as long as the
+ * pointer is over the card — so a global version would be dead on desktop
+ * anyway, and would only mislead whoever read it next. The ease comes from the
+ * fallback in .card's transition list.
+ *
+ * Deliberately not the wedge as well: iOS already latches :hover on tap, so a
+ * pressed card there widens its wedge without any help from here.
+ */
+@media (hover: none) {
+  .card:active {
+    transform: scale(0.985);
+  }
+}
+
+/*
  * useTilt already refuses to run under Reduce Motion, but the wedge wipe and the
  * shadow are pure CSS and would keep moving without this. The hover state still
  * changes — it just arrives rather than travels.
@@ -378,6 +450,28 @@ export default defineComponent({
   gap: 12px;
 }
 
+.kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+/*
+ * The accent, brought down into the text column. Mixed toward slate rather than
+ * used neat: useAccentColor's band tops out at L 0.86 (see MAX_LIGHTNESS), which
+ * is chosen to hold a 100px field against the card face and is far too pale to
+ * read as a 6px mark on it. 22% is enough to land every hue in the band on the
+ * legible side without pulling it off its own colour.
+ */
+.dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--card-accent), rgb(15 23 42) 22%);
+}
+
 .go {
   display: inline-flex;
   align-items: center;
@@ -394,9 +488,9 @@ export default defineComponent({
 }
 
 /*
- * Cardstock. A fractalNoise tile from an inline SVG, so there is no network
- * asset to ship and it rasterises at device resolution — the tooth stays the
- * same physical size on a Retina panel as on a 1x one.
+ * Cardstock. The tile itself is --grain-tile in index.css, shared with the
+ * banner, which is on the same stock since 2026-07-27; the strength stays local,
+ * because a white card and 800px of red need different amounts of it.
  *
  * multiply, not plain alpha: paper doesn't emit light, it only ever subtracts,
  * and multiplying preserves the accent wedge's hue where a neutral grey overlay
@@ -423,7 +517,7 @@ export default defineComponent({
   pointer-events: none;
   opacity: var(--grain-strength);
   mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23c)'/%3E%3C/svg%3E");
+  background-image: var(--grain-tile);
   mask-image: radial-gradient(circle farthest-side at
       calc(50% + var(--tilt-x, 0) * 30%) calc(50% + var(--tilt-y, 0) * 30%),
       rgb(0 0 0 / 1) 0%,

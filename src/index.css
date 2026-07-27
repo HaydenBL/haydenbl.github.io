@@ -22,6 +22,24 @@
 }
 
 /*
+  The paper tooth, shared by the cards and the banner: an inline fractalNoise
+  tile, so there is no network asset and it rasterises at device resolution —
+  the grain stays the same physical size on a Retina panel as on a 1x one.
+
+  It lives here rather than in either component because the two surfaces have to
+  be the same stock. Two copies of a data URI would drift apart the first time
+  one of them was tuned. Strength is *not* shared: each surface sets its own
+  opacity, because 800px of saturated red and a 160px white card do not take the
+  same amount of it.
+
+  A plain custom property, not an @theme token — v4 prunes theme variables no
+  utility references, and this is only ever read by hand-written CSS.
+*/
+:root {
+  --grain-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23c)'/%3E%3C/svg%3E");
+}
+
+/*
   The accent wedge on each card is placed from --wedge (its width at the card's
   top edge), and hover animates it. A custom property is an unanimatable token
   stream until it is registered with a syntax, so without this the wipe snaps

@@ -33,13 +33,10 @@ export default defineComponent({
     Header,
     Item,
   },
-  created() {
-    const INITIAL_DELAY = 350;
-    const ITEM_DELAY = 70;
-    for (let i in this.projects) {
-      setTimeout(() => this.projects[i].show = true, +i * ITEM_DELAY + INITIAL_DELAY);
-    }
-  },
+  // No entrance timers here any more. Each card reveals itself when it is
+  // actually scrolled into view (see useReveal) — a fixed ladder from here spent
+  // four of the six entrances below the fold on a phone, where the grid is one
+  // column and only two and a half cards are ever on screen at load.
   data(): { projects: ItemInterface[] } {
     return {
       projects: [

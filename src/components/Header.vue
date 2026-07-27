@@ -27,20 +27,20 @@
                   :show="show"
                   class="absolute top-0 w-full overflow-hidden
                          h-[400px] md:h-[570px] lg:h-[750px] xl:h-[1060px] 2xl:h-dvh">
-    <div class="text-white origin-top-left
+    <div class="banner text-white origin-top-left
                 text-5xl md:text-6xl
                 -rotate-45
                 w-[100rem]
                 translate-y-104 md:translate-y-112
                 -translate-x-332 md:-translate-x-300 lg:-translate-x-260 xl:-translate-x-180"
     >
-      <div class="bg-red-500 h-200"></div>
-      <div class="bg-red-500 py-2 -mt-px flex">
+      <div class="stock bg-red-500 h-200"></div>
+      <div class="stock bg-red-500 py-2 -mt-px flex">
         <div class="w-7xl"></div>
         <TransitionChild as="div"
                          class="flex space-x-3"
                          enter="transition transform-gpu ease-out duration-500"
-                         enterFrom="translate-x-80"
+                         :enter-from="iconsEnterFrom"
         >
           <!-- Instagram -->
           <a href="https://www.instagram.com/hayden_blaise/" target="_blank" aria-label="Instagram" class="transition-transform ease-in-out duration-200 hover:scale-110 hover:rotate-6">
@@ -59,9 +59,9 @@
       <TransitionChild as="div"
                        class="w-full -mt-px flex"
                        enter="transition transform-gpu ease-out duration-500"
-                       enterFrom="-translate-x-120"
+                       :enter-from="wordmarkEnterFrom"
       >
-        <span class="w-7xl text-right pt-1 pb-3 pr-2 bg-red-500 text-white">
+        <span class="stock w-7xl text-right pt-1 pb-3 pr-2 bg-red-500 text-white">
           <!-- Hayden svg — decorative; the name is stated by the <h1> in App.vue -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-12 lg:h-16 w-auto fill-current inline" viewBox="0 0 838.751 277" aria-hidden="true">
             <path d="M214.1,279.149h39.888L276.148,175h40.719l-22.16,104.152H334.6l44.043-207.2H338.75L321.022,154.5H280.3l17.728-82.546q-7.208-.552-11.08-0.554-22.718,0-45.428,10.388t-37.257,27.146q-14.542,16.763-14.542,34.486,0,14.406,7.34,20.637t22.3,6.232a24.432,24.432,0,0,0-1.939-4.57q-1.943-4.012-1.939-14.266,0-21.879,10.11-37.395t28.67-23.268Zm189.743,1.662q13.567,0,23.406-7.063a77.414,77.414,0,0,0,17.867-18.421q1.383,12.465,8.448,18.975t18.7,6.509q15.231,0,30.331-10.664t25.346-40.581H516.3q-3.324,11.634-9,18.836t-13.434,7.2q-11.361,0-11.357-11.911a34.233,34.233,0,0,1,1.108-8.864l19.944-94.18H463.675l-3.047,14.681v-1.939a11.963,11.963,0,0,0-5.54-10.249q-5.544-3.876-16.9-3.878a53.708,53.708,0,0,0-38.642,15.651,99.185,99.185,0,0,0-24.376,38.226q-8.168,22.579-8.171,43.073,0,23,10.526,33.794t26.315,10.8h0Zm18-26.869a13.607,13.607,0,0,1-9.834-3.878Q408,246.188,408,232.336t4.986-31.993q4.986-18.139,13.85-31.024t19.944-12.881q5.817,0,8.587,3.463a11.271,11.271,0,0,1,2.77,7.063l-13.3,62.6q-2.493,11.361-9.28,17.867t-13.711,6.509h0ZM559.513,348.4a50.173,50.173,0,0,0,30.747-10.11q13.569-10.116,19.113-36.98l4.155-19.944a67.876,67.876,0,0,0,28.808-15.65q12.738-11.492,20.221-36.149H650.923q-5.544,17.451-13.573,26.315t-21.329,13.3l27.423-128.528H603.556l-19.39,90.579q-3.324,10.251-8.864,16.482t-12.742,6.232q-8.31,0-8.31-12.188a28.464,28.464,0,0,1,.831-6.925l19.944-94.18H535.137L516.3,229.566a96.2,96.2,0,0,0-2.216,18q0,16.62,8.171,24.93t21.468,8.31a45.15,45.15,0,0,0,16.9-3.324q8.31-3.324,16.343-12.188l-3.324,14.958q-19.671,6.369-32.409,15.928T528.489,321.53q0,13.017,8.864,19.944t22.16,6.925h0Zm-6.371-21.606a8.847,8.847,0,0,1-6.925-2.77,9.252,9.252,0,0,1-2.493-6.371q0-13.575,27.146-23.545l-1.662,8.033q-2.493,11.907-6.925,18.282t-9.141,6.371h0Zm131.019-45.982a39.753,39.753,0,0,0,23.683-7.2,66.955,66.955,0,0,0,17.313-18.282q1.662,11.634,8.725,17.728t18.421,6.094q38.778,0,55.677-49.583H796.346q-3.324,11.082-9,17.728t-13.434,6.648q-6.1,0-8.726-2.354t-2.631-7.895a34.233,34.233,0,0,1,1.108-8.864l31.855-149.58-41,5.54L740.946,154.5v-1.108a11.963,11.963,0,0,0-5.54-10.249q-5.544-3.876-16.9-3.878a53.708,53.708,0,0,0-38.642,15.651,99.185,99.185,0,0,0-24.376,38.226q-8.167,22.579-8.171,43.073,0,23,10.526,33.794t26.315,10.8h0Zm18.005-26.869a13.607,13.607,0,0,1-9.834-3.878q-4.019-3.876-4.016-17.728t4.986-31.993q4.986-18.139,13.85-31.024T727.1,156.438q8.862,0,11.357,9.7L724.88,229.566v1.385q-2.493,10.8-9.28,16.9t-13.434,6.094h0Zm133.789,26.869q45.426,0,76.175-51.245h-9.418q-12.744,14.127-23.406,21.052t-25.623,6.925q-10.53,0-15.235-4.847t-4.709-18.421q0-2.766.554-11.08a76,76,0,0,0,31.3-9,65.4,65.4,0,0,0,23.545-20.914A49.637,49.637,0,0,0,898,164.748q0-26.592-30.47-26.592-26.04,0-42.935,16.759a97.736,97.736,0,0,0-24.376,39.749q-7.479,23-7.479,42.1,0,22.716,11.357,33.379t31.855,10.664h0Zm0.554-70.912a132.924,132.924,0,0,1,13.712-39.611q9.556-17.451,19.528-17.451,6.921,0,6.925,11.357A43.962,43.962,0,0,1,871,185.8a50.763,50.763,0,0,1-14.958,16.9,36.524,36.524,0,0,1-19.529,7.2h0ZM998,280.811a30.358,30.358,0,0,0,20.363-7.2q8.445-7.2,10.11-21.329c-1.67,1.108-4.71,1.662-9.14,1.662q-6.105,0-8.59-3.047t-2.49-8.587a63.059,63.059,0,0,1,1.8-12.88q1.785-8.167,4.01-16.759,3.6-14.127,5.54-23.96a93.271,93.271,0,0,0,1.94-17.867q0-15.789-8.31-23.545T990.8,139.541q-18.562,0-32.409,15.512l3.047-14.4H921.545l-29.362,138.5h39.888l18.836-88.917q3.324-11.355,8.864-18.42t12.742-7.064q9.972,0,9.972,14.127a79.509,79.509,0,0,1-1.939,15.235q-1.943,9.42-4.155,19.113-0.559,1.941-2.078,8.864t-2.908,14.266a71.418,71.418,0,0,0-1.385,13.157q0,13.575,6.648,22.437T998,280.811h0Z" transform="translate(-189.719 -71.406)"/>
@@ -82,12 +82,21 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {TransitionRoot, TransitionChild} from "@headlessui/vue";
+import {prefersReducedMotion} from "../composables/useReducedMotion";
 
 export default defineComponent({
   name: "Header",
   data() {
+    // The two rows travel 320px and 480px along the diagonal, which is the
+    // largest movement anywhere on the site. Under Reduce Motion they fade
+    // instead: the enter classes below are bound rather than literal for that
+    // reason alone. Read once — this is a mount-time entrance that never runs
+    // again, so there is nothing for a later toggle to affect.
+    const still = prefersReducedMotion();
     return {
-      show: false
+      show: false,
+      iconsEnterFrom: still ? 'opacity-0' : 'translate-x-80',
+      wordmarkEnterFrom: still ? 'opacity-0' : '-translate-x-120',
     }
   },
   created() {
@@ -99,3 +108,84 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped>
+/*
+ * Cardstock, on the surface that never had any. The cards have carried a grain
+ * tile since the redesign and the banner sat flat next to them — and it is the
+ * largest field on the site, so it was the flatness you saw first. Same tile
+ * (--grain-tile, index.css), same multiply, lower strength: the card's 0.18
+ * reads as tooth across 160px and as television snow across 800px of saturated
+ * red.
+ *
+ * 0.13 is a floor as much as a ceiling. A multiply of grey noise perturbs
+ * red-500 by about ±5 levels here — present at arm's length, gone in a
+ * screenshot — and dropping it to 0.06 made it perceptually nothing at all,
+ * which is worse than not shipping it. If it wants tuning, this is the number,
+ * and it wants judging on a real panel rather than in a compressed capture.
+ *
+ * It rides inside the rotated stack rather than over the header box, which is
+ * both correct and necessary. Correct because the grain then turns with the slab
+ * the way a texture printed on the paper would. Necessary because the box is
+ * only part red — an overlay across the whole of it would lay grain over the
+ * page's gray in a hard-edged rectangle.
+ */
+.stock {
+  position: relative;
+}
+
+.stock::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.13;
+  mix-blend-mode: multiply;
+  background-image: var(--grain-tile);
+}
+
+/*
+ * The banner recedes as the page scrolls: it travels slightly faster than the
+ * grid, so the cards ride up past it instead of with it.
+ *
+ * Scroll-driven, not scroll-listened — there is no JS here, nothing to throttle,
+ * and nothing to tear down. Where the timeline isn't supported the @supports
+ * block never applies and the banner is simply static, which is the entire
+ * fallback story.
+ *
+ * Up, not down, and that is not a taste call. The header box clips at a fixed
+ * height chosen so the art's lowest point lands on its bottom edge, so drifting
+ * the stack *down* would push the diagonal's tip into the clip and cut it off
+ * square — the very artefact the height ladder above exists to avoid. Upward the
+ * art only retreats from an edge it was already touching, and the top-left bleed
+ * covers the other end.
+ *
+ * The offsets are in the banner's own rotated frame. Per Transforms L2 the
+ * matrix composes as translate · rotate · scale · transform, so `transform`
+ * lands after the -45deg — which is also why it is free to use here at all: the
+ * translate ladder in the template owns the `translate` property, and the two
+ * compose instead of overwriting each other. Equal (+x, −y) in that frame comes
+ * out as straight up on screen, hence √2/2 on both axes.
+ */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .banner {
+      --drift: 100px;
+      animation-name: banner-drift;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root block);
+      /* Viewport-relative so it doesn't need a rung per breakpoint, unlike the
+       * height ladder. Spent by the time the grid owns the screen; if the page
+       * is too short to scroll that far, the drift just stops partway. */
+      animation-range: 0 60vh;
+    }
+  }
+}
+
+@keyframes banner-drift {
+  to {
+    transform: translate(calc(var(--drift) * 0.70711), calc(var(--drift) * -0.70711));
+  }
+}
+</style>

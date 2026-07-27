@@ -128,14 +128,25 @@ Done on `updates` after the audit was written, so several Phase 6 line reference
 
 **Load-bearing things a future edit can silently break:**
 
-- `--gutter = resting --wedge − 15 + 8`. The 15 is `.body`'s top padding. Change one, recompute the other, or the wedge collides with the title at rest.
+- `--gutter = hover --wedge − 15 + 8`. The 15 is `.body`'s top padding. Change one, recompute the other, or the wedge collides with the title. **Was `resting --wedge` until 2026-07-27** — see the wedge-resize note below.
 - `@property --wedge` in `src/index.css` is what makes the wipe animate. Delete it and the hover snaps — with no error anywhere. It needs Firefox 128+; below that it degrades to a snap.
-- `--wedge` must stay close to the card height (the edge runs out at `y = --wedge`) and must *not* land within a pixel or two of the icon's circle, which reads as a clipping bug. Both are derived in `Item.vue`'s geometry comment with the arithmetic shown.
+- `--wedge` must *not* land within a pixel or two of the icon's circle, which reads as a clipping bug; the tangent widths to avoid are 61/191 desktop and 49/153 phone. It no longer has to stay close to the card height — the resting wedge deliberately stops around two-thirds of the way down. Both are derived in `Item.vue`'s geometry comment with the arithmetic shown.
 - The `sm` `:hover` rule must stay *after* the base `:hover`, or the narrow hover value wins at every width.
 
 **Verified, don't redo:** `yarn build` clean on Node 22.23.1; `@property`, `line-clamp-2`, `scale-70` and the scoped `@keyframes` rename all confirmed present in `dist/`; accent algorithm re-run offline against all six real icons.
 
-**Deliberate, don't re-flag:** the wedge runs *under* the text on hover rather than the gutter being sized to clear it (that would cost 52–58px of text column in both states); the icon does not move on hover; `.card` sets no `overflow`; the reduced-motion block covers hover CSS only, because the entrance is a separate open item below.
+**Deliberate, don't re-flag:** the resting wedge stops well short of the card's bottom edge; the icon does not move on hover; `.card` sets no `overflow`; the reduced-motion block covers hover CSS only, because the entrance is a separate open item below.
+
+### Wedge resize (2026-07-27)
+
+All four `--wedge` values dropped a step: rest 132→95 / 152→110, hover 184→132 / 210→152. Hover now lands on the width the card used to *rest* at, and the resting state is a small corner triangle. `--gutter`, `--icon` and the icon offsets are untouched.
+
+Two earlier notes are inverted by this and should not be restored:
+
+- The wedge no longer runs under the text on hover. The old hover width overran `--gutter` on purpose; the new one *is* the width the gutter was drawn for, so the edge stops at the text column in every state. The gutter numbers didn't move — only which width they're derived from.
+- **The AA finding at line 169 below is closed by this.** No text sits over the accent at any point in any state now, so the description's 2.4:1 worst case can't occur. `Item.vue`'s geometry comment no longer carries per-icon text-contrast figures, because there is no text-over-accent to measure.
+
+Still true: the accent must separate from the card face and from the icon it was sampled from — that is `useAccentColor`'s job and this change doesn't touch it.
 
 ---
 
@@ -166,7 +177,9 @@ Done on `updates` after the audit was written, so several Phase 6 line reference
 
 Tailwind v4 migration is clean — no config files, no `@tailwind` directives, no v3 leftovers; the v4 transform-property split broke nothing. No `any`, no non-null assertions, no listener leaks. headlessui transition nesting is correct. Touch users are not stranded. `target="_blank"` without `rel="noopener"` is safe at this site's browser floor (modern browsers imply it), though adding it is free.
 
-⚠️ **The old contrast line here — "passes AA at worst case (12.4:1 tint, 9.7:1 under gloss)" — was deleted, not carried forward.** It described the `.tint` wash, which no longer exists. Re-measured against the wedge and the six real icons 2026-07-26; the current numbers live in `Item.vue`'s geometry comment and are *not* uniformly AA. Do not quote the old figures.
+⚠️ **The old contrast line here — "passes AA at worst case (12.4:1 tint, 9.7:1 under gloss)" — was deleted, not carried forward.** It described the `.tint` wash, which no longer exists. Do not quote the old figures.
+
+**Resolved 2026-07-27 by the wedge resize** (see above). The 2026-07-26 re-measurement found the description at 2.4:1 where the hover wedge crossed it; the wedge no longer reaches the text column in any state, so no text is drawn over the accent at all. The remaining text-on-card contrast is black/gray-600 on `#fbfbfc`, which is not in question. This becomes live again only if a future hover width exceeds `--gutter`.
 
 ## Hardware checks — all clear except iPad
 

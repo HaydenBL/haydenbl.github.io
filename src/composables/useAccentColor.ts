@@ -34,10 +34,12 @@ const LIGHTNESS_GAP = 0.22;
 // the spread across hues at one L dwarfs the spread across this whole band. At
 // L 0.55, S 0.85 the wedge runs 2.7:1 against black text at hue 240 and 16.9:1
 // at hue 60. So the floor exists only so a dark-edged icon still gets a field
-// instead of a near-black slab; it does not promise the card text is readable
-// over it. The six current icons all resolve to 0.65-0.86, so nothing sits near
-// it today — check the numbers in Item.vue's geometry comment before adding an
-// icon with a dark edge and a saturated blue or purple mark.
+// instead of a near-black slab. It never promised the card text was readable
+// over the wedge — and since 2026-07-27 it does not have to: the wedge stops at
+// --gutter in every state, so no text is drawn over the accent at any width.
+// What the band still owes is separation from the icon and from the card face,
+// which is what the two bounds above are for. The six current icons all resolve
+// to 0.65-0.86, so nothing sits near the floor today.
 const MIN_LIGHTNESS = 0.55;
 const MAX_LIGHTNESS = 0.86;
 

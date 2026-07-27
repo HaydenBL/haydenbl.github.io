@@ -110,55 +110,64 @@ export default defineComponent({
  * of the card: the first line of the title starts --body's 15px of padding down,
  * and the edge has already walked 15px left by then. So the rule is
  *
- *     --gutter  =  resting --wedge  -  15  +  clearance
+ *     --gutter  =  hover --wedge  -  15  +  clearance
  *
- * with clearance at 8px. Note *resting*: the gutter is not sized to clear the
- * hover width. It was, and that cost the whole hover advance — 52px of text
- * column on every card in both states, 58 on desktop — to buy room for a state
- * only one card is ever in. The wedge now runs past the text on hover and slides
- * underneath it instead, the text being a z-index above the slab.
+ * with clearance at 8px. Note *hover*, and note that both widths dropped a step
+ * on 2026-07-27: the wedge now rests small and grows on hover to the width it
+ * used to rest at, so the gutter numbers themselves are unchanged.
  *
- * What that costs, measured against the six current icons rather than assumed
- * from the lightness band: the title is black and lands between 6.8:1 (midi2smw,
- * the darkest accent) and 13.6:1, so it is fine wherever the edge crosses it.
- * The description is text-gray-600 and the edge reaches ~20px into its first
- * line at full hover, where the same six run 2.4:1 to 4.9:1 — the low end is
- * under AA. Accepted on the eyeball for a few characters of a transient,
- * hover-only state (Hayden, 2026-07-26). Re-measure if the advance grows, if the
- * gutter shrinks, or if the description ever gets lighter text.
+ * The gutter used to be derived from the resting width, which let the hover wipe
+ * run past the text and slide under it — the text being a z-index above the slab
+ * — and that cost the description a stretch at 2.4:1 against the darkest accent.
+ * It no longer does: the widest the wedge ever gets is now the width the gutter
+ * was drawn for, so the edge stops at the text column in every state instead of
+ * crossing it. That contrast note is retired, and comes back only if the hover
+ * width grows past the gutter again.
  *
- * The advance is large on purpose. A small one puts the edge a character or two
- * into the title and stops, which reads as a collision; a large one crosses
- * behind the first line or two outright, which reads as the colour sweeping. The
- * failure mode here is being timid, not being bold.
+ * So the gesture is no longer colour sweeping behind the title. It is the
+ * triangle growing out of the corner, read against the icon: the edge cuts
+ * through the icon at rest and has moved out past it by full hover. Smaller
+ * advance in pixels, but it now lands on the icon rather than on the text, which
+ * is the thing worth watching when these numbers move.
  *
  * The icon deliberately breaks the diagonal. Its centre sits at
  * (--icon-left + r, --icon-top + r), and the edge runs x + y = --wedge, so the
  * circle stands proud of the colour by r - (--wedge - centre.x - centre.y)/√2.
- * At rest that is ~28px on desktop. Sizing --wedge so the circle and the edge
- * land within a pixel or two of each other is the one thing to avoid — that
- * reads as a clipping bug, which is exactly what it looked like before these
- * numbers came down.
+ * On desktop that runs ~57px at rest (the centre is on the transparent side of
+ * the edge, so most of the circle is outside the colour) to ~28px at hover — the
+ * latter being exactly what the card used to look like at rest. Sizing --wedge so
+ * the circle and the edge land within a pixel or two of each other is the one
+ * thing to avoid — that reads as a clipping bug, which is exactly what it looked
+ * like before these numbers came down. The two values to stay away from are the
+ * tangents, where the edge grazes the circle instead of cutting it: 61px and
+ * 191px on desktop, 49px and 153px on the phone card. The four widths in use are
+ * all 40px or more clear of one.
  *
  * Note --icon pushes the hang-off twice: a wider circle reaches further past the
  * edge, and its centre also moves down-right, which is toward the edge. Growing
  * the icon without moving --wedge is therefore the cheap way to have it break
  * the diagonal harder.
  *
- * --wedge also wants to stay close to the card's height, because the edge walks
- * left 1px per 1px down and so runs out at y = --wedge. Anything below that is
- * card with no diagonal in it. Desktop sits at 152 against a 160px card, which
- * leaves 8px; the phone card is h-36 rather than h-40 for the same reason, since
- * a wedge sized to protect a 311px-wide text column cannot also reach the bottom
- * of a 160px card.
+ * The edge walks left 1px per 1px down and so runs out at y = --wedge; anything
+ * below that is card with no diagonal in it. The wedge used to be sized to stay
+ * near the card's height for that reason, and at hover it still is — 152 against
+ * a 160px card leaves 8px. At rest it deliberately is not: 110 leaves the bottom
+ * 50px of a desktop card clear, which is what makes the resting state read as a
+ * corner mark rather than a diagonal split. The card growing a full diagonal on
+ * hover is most of the effect, so that empty band is the point, not a shortfall.
  *
- * Hover advances the wedge 52px (58 on desktop), far enough that the edge is
- * well past the title's first line rather than clipping the end of it. The icon
- * is fully covered at that point, so it goes from breaking the diagonal at rest
- * to sitting inside the colour — which is the whole gesture.
+ * The phone card stays h-36 rather than h-40. It no longer has to be — the
+ * resting wedge is nowhere near the bottom either way — but the hover width is
+ * still capped by the 311px text column it has to clear, and 132 reaches further
+ * down a 144px card than a 160px one.
+ *
+ * Hover advances the wedge 37px (42 on desktop). That is smaller than the 52/58
+ * it was, and it has to be: the top of the range is pinned to the gutter and the
+ * bottom is where the resting triangle stops looking like a deliberate mark. If
+ * this ever needs to feel faster, the 340ms below is the dial, not the distance.
  */
 .card {
-  --wedge: 132px;
+  --wedge: 95px;
   --gutter: 125px;
   --icon: 74px;
   --icon-top: 14px;
@@ -198,7 +207,7 @@ export default defineComponent({
 }
 
 .card:hover {
-  --wedge: 184px;
+  --wedge: 132px;
 }
 
 /*
@@ -225,20 +234,21 @@ export default defineComponent({
 
 /* Matches Tailwind v4's sm breakpoint. Below it the card is 311px at a 375px
  * viewport — main's px-6 and the inner div's px-2 take 32px a side — so the
- * 125px gutter leaves 172px of text. A gutter sized to clear the hover wedge
- * instead (177px) would leave 120px, which is the trade the base rule declines.
+ * 125px gutter leaves 172px of text. That gutter is now what caps the hover
+ * wedge at 132 rather than the other way round: the phone card cannot afford a
+ * wider one, so the resting width is set down from there.
  * Both rules have to sit after the base :hover above, or the narrow hover value
  * would win at every width. */
 @media (width >= 40rem) {
   .card {
-    --wedge: 152px;
+    --wedge: 110px;
     --gutter: 145px;
     --icon: 92px;
     --icon-top: 18px;
     --icon-left: 16px;
   }
 
-  .card:hover { --wedge: 210px; }
+  .card:hover { --wedge: 152px; }
 }
 
 /*

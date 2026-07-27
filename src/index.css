@@ -5,6 +5,16 @@
 }
 
 /*
+  The site is deliberately light-only. Declaring it stops Chrome's Auto Dark
+  Theme on Android from algorithmically inverting the page, which it does badly
+  here: the .tint/.gloss overlays paint on top of the card text, so an inversion
+  leaves dark text under a non-inverted accent wash.
+*/
+:root {
+  color-scheme: light;
+}
+
+/*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
   looks the same as it did with Tailwind CSS v3.

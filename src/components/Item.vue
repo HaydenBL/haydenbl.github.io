@@ -257,8 +257,26 @@ export default defineComponent({
       --wedge 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card:hover {
-  --wedge: 132px;
+/*
+ * The wipe, and the .go nudge further down, are gated rather than left as plain
+ * `:hover`. iOS latches :hover on tap and holds it until you tap elsewhere — a
+ * card touched on a phone stayed wide indefinitely, including after coming back
+ * from the tab the tap opened, which read as the triangle growing at random.
+ *
+ * That makes `(any-hover: hover)` live in a third place: Tailwind's `hover:`
+ * variant is redefined to it in index.css, useTilt.ts asks it in JS, and these
+ * two blocks ask it here. All three have to move together. It cannot be folded
+ * into the variant — scoped CSS is plain CSS and never passes through Tailwind —
+ * and putting the widths in the template as hover:[--wedge:…] to reach the
+ * variant would strand two numbers away from the comment block above that
+ * derives them.
+ *
+ * Not `(hover: hover)`: see index.css for why that answers false on every iPad.
+ */
+@media (any-hover: hover) {
+  .card:hover {
+    --wedge: 132px;
+  }
 }
 
 /*
@@ -299,7 +317,10 @@ export default defineComponent({
     --icon-left: 16px;
   }
 
-  .card:hover { --wedge: 152px; }
+  /* Gated to match the base hover width above — see the note there. */
+  @media (any-hover: hover) {
+    .card:hover { --wedge: 152px; }
+  }
 }
 
 /*
@@ -376,14 +397,18 @@ export default defineComponent({
  * anyway, and would only mislead whoever read it next. The ease comes from the
  * fallback in .card's transition list.
  *
- * Deliberately not the wedge as well: iOS already latches :hover on tap, so a
- * pressed card there widens its wedge without any help from here.
+ * It is now the *only* feedback there, and that is the point rather than a
+ * shortfall. The wedge used to come along for free, because iOS latches :hover
+ * on tap — but a latch is not a press: it fired on tap and then stayed until you
+ * touched something else, so the triangle appeared to grow at random. Gating the
+ * wipe on `any-hover` took that away deliberately. Hover means nothing on a
+ * finger, so the wedge is a pointer-only gesture and the scale carries touch.
  *
- * Stays `hover: none` while everything else moved to `any-hover` (index.css,
- * useTilt.ts). That is not an oversight: the two queries ask different
- * questions, and on an iPad with a Magic Keyboard both answers are yes. This one
- * asks "can a finger press this surface" — true on an iPad whatever is plugged
- * into it — so the press state belongs there alongside the trackpad's tilt.
+ * Stays `hover: none` while everything else uses `any-hover` (index.css,
+ * useTilt.ts, and the wipe above). That is not an oversight: the two queries ask
+ * different questions, and on an iPad with a Magic Keyboard both answers are
+ * yes. This one asks "can a finger press this surface" — true on an iPad
+ * whatever is plugged into it — so the press belongs there alongside the tilt.
  * Switching it to `any-hover: none` would delete the press response from the one
  * device that most needs both. The overlap is harmless: useTilt writes no inline
  * transform until the pointer actually enters, so a cold tap still scales.
@@ -491,9 +516,12 @@ export default defineComponent({
   transition: transform 220ms ease-out, color 220ms ease-out;
 }
 
-.card:hover .go {
-  transform: translateX(3px);
-  color: rgb(17 24 39);
+/* Gated with the wedge — same gesture, so it switches on and off with it. */
+@media (any-hover: hover) {
+  .card:hover .go {
+    transform: translateX(3px);
+    color: rgb(17 24 39);
+  }
 }
 
 /*

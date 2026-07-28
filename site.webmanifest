@@ -1,5 +1,9 @@
 {
+    "id": "/",
     "name": "Hayden Blaise Lueck",
+    "short_name": "Hayden",
+    "description": "Portfolio of Hayden Blaise Lueck",
+    "start_url": "/",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -10,9 +14,15 @@
             "src": "/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ],
-    "theme_color": "#ffffff",
+    "theme_color": "#f3f4f6",
     "background_color": "#ffffff",
     "display": "standalone"
 }

@@ -1,4 +1,4 @@
-import { onBeforeUnmount, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { prefersReducedMotion } from "./useReducedMotion";
 
 // Tuning knobs for the hover tilt. Tweak these first if the effect feels off.
@@ -34,6 +34,7 @@ export function useTilt() {
   let settleTimer = 0;
   let pointerX = 0;
   let pointerY = 0;
+  let hovered = false;
 
   const clearSettle = () => {
     if (!settleTimer) return;
@@ -69,6 +70,7 @@ export function useTilt() {
 
   const onMouseEnter = (event: MouseEvent) => {
     if (!enabled || !card.value) return;
+    hovered = true;
     clearSettle();
 
     // Ease into the tilt rather than snapping to wherever the pointer entered,
@@ -101,6 +103,7 @@ export function useTilt() {
 
   const onMouseLeave = () => {
     if (!enabled || !card.value) return;
+    hovered = false;
     if (frame) {
       cancelAnimationFrame(frame);
       frame = 0;
@@ -113,7 +116,33 @@ export function useTilt() {
     card.value.style.setProperty("--gloss-strength", "0");
   };
 
+  // mouseleave is not guaranteed when the pointer stops being over the card for
+  // a reason other than moving it — Cmd-Tab, a space switch or hiding the tab
+  // can all leave the last hovered card frozen mid-tilt until it is hovered
+  // again. Unwind it by hand on the way out.
+  //
+  // Both events are needed and neither is redundant: switching tabs fires
+  // visibilitychange, while moving to another app or window fires only blur.
+  // The reset is idempotent, so the overlap where both fire costs nothing.
+  const resetIfHovered = () => {
+    if (hovered) onMouseLeave();
+  };
+
+  // Guarded on `hidden` because visibilitychange also fires on the way *back*,
+  // where there is nothing to unwind.
+  const onVisibilityChange = () => {
+    if (document.hidden) resetIfHovered();
+  };
+
+  onMounted(() => {
+    if (!enabled) return;
+    window.addEventListener("blur", resetIfHovered);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+  });
+
   onBeforeUnmount(() => {
+    window.removeEventListener("blur", resetIfHovered);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
     if (frame) cancelAnimationFrame(frame);
     clearSettle();
   });

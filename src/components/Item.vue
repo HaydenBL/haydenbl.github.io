@@ -378,6 +378,15 @@ export default defineComponent({
  *
  * Deliberately not the wedge as well: iOS already latches :hover on tap, so a
  * pressed card there widens its wedge without any help from here.
+ *
+ * Stays `hover: none` while everything else moved to `any-hover` (index.css,
+ * useTilt.ts). That is not an oversight: the two queries ask different
+ * questions, and on an iPad with a Magic Keyboard both answers are yes. This one
+ * asks "can a finger press this surface" — true on an iPad whatever is plugged
+ * into it — so the press state belongs there alongside the trackpad's tilt.
+ * Switching it to `any-hover: none` would delete the press response from the one
+ * device that most needs both. The overlap is harmless: useTilt writes no inline
+ * transform until the pointer actually enters, so a cold tap still scales.
  */
 @media (hover: none) {
   .card:active {

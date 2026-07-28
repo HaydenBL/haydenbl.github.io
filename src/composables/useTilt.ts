@@ -9,9 +9,15 @@ const PERSPECTIVE_PX = 700;
 const ENTER_MS = 220;
 const RETURN_MS = 300;
 
+// `any-hover`, not `hover`: WebKit on iPadOS answers `hover` for the primary
+// pointer, which is the touchscreen even with a Magic Keyboard attached, so
+// `(hover: hover)` locked the tilt off on every iPad. Tailwind's `hover:`
+// variant is overridden to the same query in index.css — change one and you
+// have to change the other, or the CSS and JS halves of the hover treatment
+// disagree about what device they are on.
 function tiltIsWanted(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
-  return window.matchMedia("(hover: hover)").matches && !prefersReducedMotion();
+  return window.matchMedia("(any-hover: hover)").matches && !prefersReducedMotion();
 }
 
 /**

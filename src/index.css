@@ -12,6 +12,32 @@
 }
 
 /*
+  Tailwind's stock `hover:` variant compiles to `@media (hover: hover)`, which
+  WebKit on iPadOS reports as false even with a Magic Keyboard attached — it
+  answers for the *primary* pointer, which is always the touchscreen there
+  (webkit.org/b/209292, open since iOS 13.4; confirmed on Hayden's own iPad
+  2026-07-27, where `(hover: hover)` is false and `(any-hover: hover)` is true).
+
+  Redefining the variant here rather than at each call site is what keeps the
+  gates in sync. useTilt.ts asks `(any-hover: hover)` too, and the card's wedge
+  wipe is plain CSS `:hover` that already fires on a trackpad — so had only the
+  composable changed, the tilt would have switched on for iPad while `hover:z-10`
+  and the header's icon lift stayed off. One definition, one behaviour.
+
+  This does nothing on a touch-only phone: `any-hover` is false there just as
+  `hover` is. It only changes devices that genuinely have both, which is exactly
+  what it should describe. Note the `(hover: none)` press-state block in Item.vue
+  is deliberately NOT changed to match — see the comment there.
+*/
+@custom-variant hover {
+  @media (any-hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
+/*
   The site is deliberately light-only. Declaring it stops Chrome's Auto Dark
   Theme on Android from algorithmically inverting the page, which it does badly
   here: the .slab/.gloss overlays paint on top of the card text, so an inversion

@@ -14,19 +14,40 @@
     px. Derived as translate-x + translate-y + 2 * (stack height / sqrt(2));
     re-measure if the translate ladder or the stack changes.
 
-    2xl is the exception: there the grid gains its third column, so the content
-    collapses from 1072px to 864px while the ladder stays frozen at its xl values
-    and the art still reaches 1055px. Since the art can't fit, it is clipped at
-    the viewport instead, which puts the cut on the window's bottom edge — the same
-    way the banner already bleeds off the top and left. Caveat: on a 2xl-wide but
-    short window (under ~870px tall) the page scrolls to the content and the cut
-    becomes visible mid-scroll. The real fix for that is the missing 2xl rung in
-    the ladder (AUDIT.md, Phase 6), which is a composition change, not this.
+    The ladder stops at xl on purpose, and 2xl gets no height of its own — xl's
+    1060px carries through, which is what contains the art at every width above it.
+
+    2xl is where the grid gains its third column, so the content is the only thing
+    on the site that gets *shorter* as the viewport grows: 1072px down to 864px. For
+    the first time the header box is then the tallest thing on the page. There used
+    to be a 2xl height here that clipped the box to the viewport to hide that, and
+    it was a bug: it hid the overshoot on a tall window and turned it into a hard
+    horizontal cut across the art on anything under ~870px, as soon as you scrolled
+    the ~107px to the content's end.
+
+    (Deliberately not naming that old utility: Tailwind scans this file, prose and
+    all, so writing the class name would keep emitting the rule it describes. Same
+    mechanism as the AUDIT.md Phase 4 finding — it survives `source(none)`, because
+    the scoped @source still covers comments inside .vue files.)
+
+    The accepted tradeoff is that at 2xl the box (1060) outruns the content (864),
+    so on a window shorter than ~1060px there is ~196px to scroll past the last card
+    with the diagonal's tail finishing in it. That is the same deal every breakpoint
+    below already takes — the box is sized to hold the art — and it is preferred to
+    the alternative.
+
+    **Do not add a 2xl rung to reclaim that 196px.** Both levers were built and
+    measured, and both are worse:
+      - translate-x: raising the art means moving the banner *left*, which reverses
+        a ladder that steps right at every other breakpoint. It snaps ~208px left
+        crossing 1536px. Rejected on sight — this is the reason there is no rung.
+      - translate-y: lands the art identically but lifts the whole stack, and the
+        wordmarks go off the top of the screen with it. Checked in a browser.
   -->
   <TransitionRoot as="div"
                   :show="show"
                   class="absolute top-0 w-full overflow-hidden
-                         h-[400px] md:h-[570px] lg:h-[750px] xl:h-[1060px] 2xl:h-dvh">
+                         h-[400px] md:h-[570px] lg:h-[750px] xl:h-[1060px]">
     <div class="banner text-white origin-top-left
                 text-5xl md:text-6xl
                 -rotate-45

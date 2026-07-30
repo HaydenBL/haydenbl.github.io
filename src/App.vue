@@ -12,7 +12,7 @@
   <main class="mt-64 md:mt-72 lg:mt-96 px-6 py-2 sm:p-8">
 
     <div class="px-2 sm:px-8 py-6">
-      <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-12 max-w-(--breakpoint-2xl) m-auto">
+      <div class="grid grid-flow-row grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-12 max-w-(--breakpoint-2xl) m-auto">
         <Item v-for="project in projects" :key="project.name" :item="project" />
       </div>
     </div>
